@@ -5,7 +5,7 @@ Quy trình làm việc
   Khi có cập nhật code ở local thì làm theo các bước: 
     -> git checkout sang nhánh của mình 
     -> git pull 
-    -> git add 
+    -> git add .
     -> git commit -m "comment của mình"
     -> git push 
     -> nhấn compare và tạo pull request trên github (nếu không có nút đó thì nhấn dòng chữ xanh xx commits ahead khi chuyển qua nhánh của mình trên github) 
