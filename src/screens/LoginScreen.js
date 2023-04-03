@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 
 const LoginScreen = ({ navigation, route }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = () => {
     // Handle login logic here
-    navigation.navigate('Home');
+    navigation.navigate("Home");
   };
 
   const handleRegister = () => {
-    navigation.navigate('Register');
+    navigation.navigate("Register");
   };
 
   return (
@@ -48,27 +48,27 @@ const LoginScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f2ba35',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f2ba35",
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 32,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#777',
+    borderColor: "#777",
     borderRadius: 8,
     padding: 12,
     marginVertical: 12,
-    width: '100%',
-    backgroundColor: '#FFF',
+    width: "100%",
+    backgroundColor: "#FFF",
   },
   button: {
-    backgroundColor: '#f27e35',
+    backgroundColor: "#f27e35",
     padding: 12,
     borderRadius: 8,
     marginTop: 32,
@@ -82,33 +82,34 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 4,
     elevation: 5,
+
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   registerContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   registerText: {
     fontSize: 16,
     marginRight: 8,
   },
   registerButton: {
-    backgroundColor: '#f2ba35',
+    backgroundColor: "#f2ba35",
     padding: 8,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#f27e35',
+    borderColor: "#f27e35",
   },
   registerButtonText: {
-    color: '#000',
+    color: "#000",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
