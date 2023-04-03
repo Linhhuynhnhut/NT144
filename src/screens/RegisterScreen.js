@@ -111,6 +111,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     width: '80%',
+    marginTop: 10,
+    borderColor:'#777',
+    borderWidth:1,
+    borderRadius: 8,
+    padding: 5,
   },
   
   genderLabel: {
@@ -152,6 +157,14 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: '80%',
     alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 5,
   },
   buttonText: {
     color: '#fff',
