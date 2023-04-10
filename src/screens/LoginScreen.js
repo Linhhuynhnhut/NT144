@@ -7,11 +7,11 @@ const LoginScreen = ({ navigation, route }) => {
 
   const handleLogin = () => {
     // Handle login logic here
-    navigation.navigate("Home");
+    navigation.navigate("Profile");
   };
 
   const handleRegister = () => {
-    navigation.navigate("Register");
+    navigation.navigate("Search");
   };
 
   return (
