@@ -1,4 +1,4 @@
-import { StatusBar } from "expo-status-bar";
+// import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
@@ -8,13 +8,12 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import Carousel from "react-native-snap-carousel";
+// import Carousel from "react-native-snap-carousel";
 import React, { useState, useEffect } from "react";
-import img1 from "../../assets/image/food0.png";
-import img2 from "../../assets/image/food1.png";
-import img3 from "../../assets/image/food2.png";
 
-const { width, height } = Dimensions.get("window");
+// Sử dụng API để thao tác với Database
+// Khi sử dụng database thì phải npm start bên project database
+import { api } from "../api/api"; // import api
 
 const slides = [
   {
@@ -35,12 +34,25 @@ const Item = ({ item }) => {
 };
 
 const IntroScreen = ({ navigation, route }) => {
-  const [currentSlideIndex, setCurrentSlideIndex] = React.useState(0);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [userArr, setUserArr] = useState([]);
+
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
     const currentIndex = Math.round(contentOffsetX / width);
     setCurrentSlideIndex(currentIndex);
   };
+
+  //Get data
+  useEffect(() => {
+    const getData = async () => {
+      const data = await api.getAllUsers();
+      console.log("data>>>", data);
+      setUserArr(data);
+    };
+
+    getData();
+  }, []);
 
   return (
     <>
