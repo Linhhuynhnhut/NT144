@@ -1,16 +1,52 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { api } from "../api/api";
 
 const RegisterScreen = ({ navigation, route }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [nameUser, setName] = useState('');
+  const [mail, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [gender, setGender] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  //const [error, setError] = useState("");
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     // Handle registration logic here
-    navigation.navigate('Home');
+    //navigation.navigate('Home');
+    // Kiểm tra các trường thông tin
+    if (nameUser === "" || mail === "" || password === "" || confirmPassword === "" || phoneNumber === "") {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    try {
+      const payload = {
+        nameUser,
+        mail,
+        password,
+        phoneNumber,
+      };
+      // Gửi yêu cầu đăng ký người dùng
+      await api.addUser(payload);
+
+      // Xử lý đăng ký thành công
+      //console.log(response.data);
+      //navigation.navigate("Home");
+      const users = await api.getAllUsers(); 
+
+      const user = users.find((user) => user.mail === mail);
+      if (user) {
+        console.log(user);
+        navigation.navigate("Profile", { user });
+      }
+    } catch (error) {
+      // Xử lý lỗi
+      console.error(error);
+    }
   };
 
   const handleLogin = () => {
@@ -23,14 +59,15 @@ const RegisterScreen = ({ navigation, route }) => {
       <TextInput
         style={styles.input}
         placeholder="Name"
-        value={name}
+        value={nameUser}
         onChangeText={(text) => setName(text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Email"
-        value={email}
+        value={mail}
         onChangeText={(text) => setEmail(text)}
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
@@ -38,6 +75,7 @@ const RegisterScreen = ({ navigation, route }) => {
         value={password}
         onChangeText={(text) => setPassword(text)}
         secureTextEntry
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
@@ -45,32 +83,15 @@ const RegisterScreen = ({ navigation, route }) => {
         value={confirmPassword}
         onChangeText={(text) => setConfirmPassword(text)}
         secureTextEntry
+        autoCapitalize="none"
       />
-      <View style={styles.genderContainer}>
-        <Text style={styles.genderLabel}>Gender:</Text>
-        <View style={styles.genderRadioButtons}>
-          <View style={styles.genderRadioButton}>
-            <Pressable
-              style={[
-                styles.genderRadioCircle,
-                gender === 'Male' && styles.genderRadioSelected,
-              ]}
-              onPress={() => setGender('Male')}
-            />
-            <Text style={styles.genderRadioLabel}>Male</Text>
-          </View>
-          <View style={styles.genderRadioButton}>
-            <Pressable
-              style={[
-                styles.genderRadioCircle,
-                gender === 'Female' && styles.genderRadioSelected,
-              ]}
-              onPress={() => setGender('Female')}
-            />
-            <Text style={styles.genderRadioLabel}>Female</Text>
-          </View>
-        </View>
-      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        value={phoneNumber}
+        onChangeText={(text) => setPhoneNumber(text)}
+        keyboardType="phone-pad"
+      />
       <Pressable style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </Pressable>
@@ -106,50 +127,6 @@ const styles = StyleSheet.create({
     width: '80%',
     fontSize: 16,
   },
-  genderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    width: '80%',
-    marginTop: 10,
-    borderColor:'#777',
-    borderWidth:1,
-    borderRadius: 8,
-    padding: 5,
-  },
-  
-  genderLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginRight: 16,
-  },
-  genderRadioButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    width: '70%',
-  },
-  genderRadioButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  genderRadioCircle: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#777',
-    borderRadius: 50,
-    width: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  genderRadioSelected: {
-    backgroundColor: '#777',
-  },
-  genderRadioLabel: {
-    fontSize: 16,
-  },
   button: {
     backgroundColor: '#f27e35',
     padding: 12,
@@ -157,7 +134,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: '80%',
     alignItems: 'center',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 5,
       height: 5,
@@ -194,5 +171,5 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
-    
+
 export default RegisterScreen;
