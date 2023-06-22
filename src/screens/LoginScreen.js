@@ -7,7 +7,7 @@ const LoginScreen = ({ navigation, route }) => {
 
   const handleLogin = () => {
     // Handle login logic here
-    navigation.navigate("Profile");
+    navigation.navigate("Home");
   };
 
   const handleRegister = () => {
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginTop: 32,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 5,
@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 4,
     elevation: 5,
-
   },
   buttonText: {
     color: "#fff",

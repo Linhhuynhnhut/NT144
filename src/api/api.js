@@ -18,6 +18,15 @@ export const api = {
     const url = "/post/" + String(ID);
     return axiosClient.get(url);
   },
+  getAllFollows: () => {
+    const url = "/follow";
+    return axiosClient.get(url);
+  },
+
+  getAllComments: () => {
+    const url = "/comment";
+    return axiosClient.get(url);
+  },
 
   //POST
   addUser: (payload) => {
@@ -27,5 +36,12 @@ export const api = {
   addPost: (payload) => {
     const url = "/post/";
     return axiosClient.post(url, payload);
+  },
+
+  // PUT / UPDATE
+  updateUser: (ID, payload) => {
+    console.log("payload>>>>", payload);
+    const url = "/user/" + String(ID);
+    return axiosClient.put(url, payload);
   },
 };

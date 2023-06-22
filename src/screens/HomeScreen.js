@@ -107,7 +107,9 @@ const HomeScreen = ({ navigation }) => {
     );
   };
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: COLORS.white, paddingTop: 30 }}
+    >
       <View style={style.header}>
         <View>
           <View style={{ flexDirection: "row" }}>
