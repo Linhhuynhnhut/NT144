@@ -1,155 +1,108 @@
-import { height, width } from "deprecated-react-native-prop-types/DeprecatedImagePropType";
-import { StatusBar } from "expo-status-bar";
-import { TouchableOpacity, StyleSheet, Text, View, Pressable ,Image, FlatList,ScrollView,TouchableWithoutFeedback} from "react-native";
-import Button from "react-native-button";
-import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Fontisto from 'react-native-vector-icons/Fontisto';
-const ProfileScreen = ({ navigation }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
- 
-  const buttonsTaskbar = [
-    { id: 0, title: 'Post', color: "white" ,boderTop: 0},
-    { id: 1, title: 'Follower', color: "white" ,boderTop: 0},
-    { id: 2, title: 'Following', color: "white" ,boderTop: 0},
-    
-  ];
-  const [selectedButton, setSelectedButton] = useState(buttonsTaskbar[0]);
-  const selectButton = (button) => {
-    setSelectedButton(button);
-  };
-  const [followers, setFollowers] = useState([
-  { id: 1, name: 'An', username: 'id.usernam1',post: "23", follower: '123K',image: require("../../assets/image/avatar1.png"), },
-  { id: 2, name: 'Bình', username: 'id.usernam2' ,post: "223", follower: '223K',image: require("../../assets/image/avatar2.jpg"),},
-  { id: 3, name: 'Cường', username: 'id.usernam3' ,post: "33", follower: '15K',image: require("../../assets/image/avatar3.jpg"),},
-  { id: 4, name: 'Đạt', username: 'id.usernam4' ,post: "63", follower: '163K',image: require("../../assets/image/avatar4.jpg"),},
-  { id: 5, name: 'Evelyn', username: 'id.usernam5' ,post: "73", follower: '93K',image: require("../../assets/image/avatar5.jpg"),},
-  { id: 6, name: 'Phương', username: 'id.usernam6' ,post: "43", follower: '13K',image: require("../../assets/image/avatar6.jpg"),},
-  { id: 7, name: 'Linh', username: 'id.usernam8' ,post: "73", follower: '623K',image: require("../../assets/image/avatar7.jpg"),},
-  { id: 8, name: 'Huy', username: 'id.usernam9' ,post: "25", follower: '23K',image: require("../../assets/image/avatar8.jpg"),},
-  { id: 10, name: 'Đức', username: 'id.usernam123' ,post: "8", follower: '12K',image: require("../../assets/image/avatar10.jpg"),},
-  ]);
-  const [isPressed, setIsPressed] = useState(false); 
-  const renderItem = ({ item }) => (
-    <View style={{flexDirection:"row", borderBottomWidth: 1, borderBottomColor: '#ccc'}}>
-      <View style={{flex:1, backgroundColor:'white',margin:5}}>
-      <Image source={item.image}
-            style={{ width: 80, height: 80 , borderRadius:40, borderWidth: 1, borderColor: 'black',marginLeft:10,}}/>
-      </View>
-    <View style={{ flex:3,padding: 10, backgroundColor:'white' }}>
-       <Text style={{ fontSize: 18 , fontWeight: 'bold', color:'black'}}>{item.name}</Text> 
-       <Text style={{ fontSize: 14, color:'black' }}>{item.username}</Text>
-    </View>
-    </View>
-  );
-  const dataPost = [
-    {
-      id: '1',
-      name:"Tôm hấp",
-      image: require("../../assets/image/food1.png"),
-      like: '1465',
-      cmt: '1231',
-    },
-    {
-      id: '2',
-      name:"Mực xào",
-      image: require("../../assets/image/food0.png"),
-      like : '653',
-      cmt: '432',
-    },
-    {
-      id: '3',
-      name:"Thạch dừa",
-      image: require("../../assets/image/food2.png"),
-      like : '342',
-      cmt: '123',
-    },
-  ];
-  const [isExpanded, setIsExpanded] = useState(false);
-  const Post = ({ post }) => {
-    return (
-      <View style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' , backgroundColor: "white",}}>
-        <View style={{alignItems: 'flex-end'}}><Fontisto name="more-v-a" size={20}  marginRight={20} /></View>
-        <Text style={{fontSize:20, fontWeight:800}}>{post.name}</Text>
-        <View style={{borderWidth: 1, borderColor: "black", borderRadius:10,justifyContent: 'center',alignItems: 'center',marginTop: 10}}>
-        <Image source={post.image} style={{ width: 300, height: 300 ,justifyContent: 'center',alignItems: 'center', padding:10}} resizeMode='cover' />
-        </View>
-        <View style={{flexDirection:"row", backgroundColor:"white", borderRadius:10, height:40}}>
-        <TouchableWithoutFeedback >
-          <View style={{flexDirection:'row'}}>
-            <AntDesign name="hearto" size={25} marginTop={5} marginLeft={10}  />
-            <Text style={{marginBottom: 10 , fontSize:15, color:"black" , marginTop: 5}}>{post.like}</Text>
-            </View>
-    </TouchableWithoutFeedback>
-    
-    <TouchableWithoutFeedback >
-      <View style={{flexDirection:'row',}}>
-        <Icon name="comment-text-outline" size={25} marginTop={5} marginLeft={30}  /> 
-        <Text style={{marginBottom: 10 , fontSize:15, color:"black" , marginTop: 5}}>{post.cmt}</Text>
-        </View>
-    </TouchableWithoutFeedback>
-      </View>
-      </View>
-    );
-  };
-  const [posts, setPosts] = useState(dataPost);
+import { height } from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
+import React, { useState , useEffect,useRef} from 'react';
+import { Animated,Dimensions,View, Text, FlatList, Image, ActivityIndicator,StyleSheet,TouchableOpacity,Pressable , ScrollView} from 'react-native';
+import {Entypo ,FontAwesome5, Octicons} from '@expo/vector-icons';
+  //Dữ liệu user
+  const user = {
+  iduser:'nguyenvanluan_1006',
+  username: 'Luân Nguyễn',
+  follower: 501,
+  following: 300,
+  post: 100,
+  bio: 'Xin chào! Mình là Luân, một người yêu thích du lịch và ẩm thực. Mình sống và làm việc tại TP.HCM, Việt Nam. ',
+  avatar: "../../assets/image/avatar.png"
+};
+export default ProfileScreen = ({ navigation }) => {
+  // Nút Follow
+ const [isPressed, setIsPressed] = useState(false); 
+  // taskbar
+  const [currentButton, setCurrentButton] = useState(0);
+  const [buttonWidth, setButtonWidth] = useState(0);
+  const [translateValue, setTranslateValue] = useState(new Animated.Value(0));
+  const translateXRef = useRef(null);
+  const [selectedButtons, setSelectedButtons] = useState([]);
+   const selectButton = (index) => {
+    setCurrentButton(index);
+    const newSelectedButtons = new Array(3).fill(false);
+    newSelectedButtons[index] = true;
+    setSelectedButtons(newSelectedButtons);
+    Animated.timing(translateValue, {
+      toValue: ((index) * (buttonWidth + 20)),
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  }
+  const onButtonLayout = (event) => {
+    const width = event.nativeEvent.layout.width;
+    setButtonWidth(width);
+  }
+  let viewToShow = null;
 
-  const renderItemPost = ({ item }) => <Post post={item} />;
+  if (selectButton === 0) {
+    viewToShow = <View style={styles.view1}><Text>View 1</Text></View>;
+  } else if (selectButton === 1) {
+    viewToShow = <View style={styles.view2}><Text>View 2</Text></View>;
+  } else if (selectButton === 2) {
+    viewToShow = <View style={styles.view3}><Text>View 3</Text></View>;
+  }
   return (
-    <>
-      <View style={{height:25,backgroundColor:"white"}}></View>
-      <View style={styles.header}>
-          <Pressable
-            style={styles.buttonLeft}
-            onPress={() => navigation.navigate("Home", {})}>
-             <Image
-            style={{ width: 40, height: 30 ,opacity: 0.8}}
-            source={require("../../assets/image/back.png")}
-          />
-          </Pressable>
-          <Text style={styles.title}>ID_Username </Text>
-          <Pressable
-            style={styles.buttonRight}
-            onPress={() => navigation.navigate("Home", {})}>
-             <Image
-            style={{ width: 60, height: 45 ,opacity: 0.8,   shadowColor: "#000",shadowOffset: {
-              width: 5,
-              height: 5,
-            },shadowOpacity: 0.8,shadowRadius: 4,elevation: 10,}}
-            source={require("../../assets/image/more.png")}
-          />
-          </Pressable>
-      </View>
-    <ScrollView stickyHeaderIndices={[3]}>
-    <View style={{height:10, backgroundColor:"white"}}></View>
-    <View style={styles.profileview}>
-        <View style={{flex :1} }>
-          <Image
-            style={{ width: 100, height: 100 , borderRadius:50, borderWidth: 5, borderColor: 'black',marginLeft:10,}}
-            source={require("../../assets/image/avatar.jpg")}
-          />
+    <View style={{marginTop:20}}>
+       <Profilecomponent isPressed= {isPressed} setIsPressed={setIsPressed} />
+       <TaskBarcomponent 
+            currentButton ={currentButton}
+            setCurrentButton ={setCurrentButton}
+            buttonWidth={buttonWidth}
+            setButtonWidth={setButtonWidth}
+            translateValue ={translateValue }
+            setTranslateValue={setTranslateValue}
+            translateXRef={translateXRef}
+            selectedButtons={selectedButtons}
+            setSelectedButtons={setSelectedButtons}
+            selectButton={selectButton}
+            onButtonLayout={onButtonLayout}
+       />
+
+  </View>
+  );
+}
+
+const Profilecomponent=({ isPressed, setIsPressed})=>{
+  return(
+    <View style={{}}>
+        <View style={styles.hander}>
+            <Text style={{  justifyContent: 'center',alignItems: 'center', color:'black', flex:2, marginLeft: 20, fontSize: 20, fontWeight:800}}>{user.iduser}</Text>
+            <TouchableOpacity style={{padding: 10,borderRadius: 5,flex:0.2,  alignItems: 'center'}}>
+            <Octicons name="diff-added" size={30} color="black" fontWeight={900} />
+           </TouchableOpacity>
+           <TouchableOpacity style={{padding: 10,borderRadius: 5,flex:0.2,alignItems: 'center'}}>
+           <Entypo name="menu" size={30} color="black" fontWeight={900} />
+           </TouchableOpacity>
         </View>
-          
-        <View style={{flex:3}} >
+        <View style={styles.profile}>
+        <View style={{flex :1.5} }>
+          <Image
+            style={{ width: 80, height: 80 , borderRadius:50, borderWidth: 2, borderColor: "#f27e35",marginLeft:10,marginTop:5}}
+            source={user.avatar}
+          />
+          <Text style={{marginLeft: 5, marginTop: 5, fontSize: 15, fontWeight:900}}>{user.username}</Text>
+        </View>
+          <View style={{flex:3}}>
           <View style={{ flexDirection: 'row',justifyContent: 'space-around',alignItems: 'flex-end',}}>
             <View style={{ alignItems: 'center' }}>
-                    <Text style={{fontStyle: "Bold",fontSize: 18,fontWeight:900,}}>20</Text>
-                    <Text style={{ fontSize: 12, color: 'grey' }}>Posts</Text>
+                    <Text style={{fontStyle: "Bold",fontSize: 18,fontWeight:900,}}>{user.post}</Text>
+                    <Text style={{ fontSize: 12, color: 'black',fontWeight:900 }}>Posts</Text>
             </View>
             <View style={{ alignItems: 'center' }}>
-                        <Text style={{fontStyle: "Bold",fontSize: 18,fontWeight:900,}}>205</Text>
-                        <Text style={{ fontSize: 12, color: 'grey' }}>Followers</Text>
+                        <Text style={{fontStyle: "Bold",fontSize: 18,fontWeight:900,}}>{user.follower}</Text>
+                        <Text style={{ fontSize: 12, color: 'black',fontWeight:900 }}>Followers</Text>
             </View>
             <View style={{ alignItems: 'center' }}>
-                        <Text style={{fontStyle: "Bold",fontSize: 18,fontWeight:900,}}>167</Text>
-                        <Text style={{ fontSize: 12, color: 'grey' }}>Following</Text>
+                        <Text style={{fontStyle: "Bold",fontSize: 18,fontWeight:900,}}>{user.following}</Text>
+                        <Text style={{ fontSize: 12, color: 'black',fontWeight:900 }}>Following</Text>
             </View> 
+            
           </View>
-          <View style={{height:10}}></View>
-          <View style={{flexDirection:'row',alignItems: 'center' ,justifyContent: 'center', }}>
+          <View style={{flexDirection:'row',alignItems: 'center' ,justifyContent: 'center', marginTop:20}}>
           <Pressable 
              onPress={() => setIsPressed(!isPressed)} // Khi nhấn vào, thay đổi giá trị state hiện tại.
                style={({ pressed }) => [
@@ -157,172 +110,101 @@ const ProfileScreen = ({ navigation }) => {
              ]}>
               {       ({ pressed }) => (
               <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius:10, height:50, width:180,justifyContent: 'center', backgroundColor: isPressed ? '#DCDCDC' : '#f27e35'}}>
-                <FontAwesome5 name={isPressed ? 'user-check' : 'user-plus'} size={30} color={pressed ? 'red' : 'black'} />
+                <FontAwesome5 name={isPressed ? 'user-check' : 'user-plus'} size={25} color={isPressed ? 'red' : 'black'} />
                   <Text style={{ fontWeight: 'bold', marginLeft: 10 }}>{isPressed ? 'UnFollow' : 'Follow'}</Text>
-
                </View>
            )}
            </Pressable>
           </View>
+          </View>    
         </View>
-          
-      </View>
-        <View style={{ paddingBottom: 10 , backgroundColor:"white"}}>
-          <View style={{ paddingHorizontal: 10 }}>
-                                <Text style={{ fontWeight: 'bold' }}>Van Luan</Text>
-                                <Text>Lark | Computer Jock | Commercial Pilot</Text>
-                                <Text>www.nguyenvanluan.com</Text>
+        <View style={{ }}>
+           <Text style={{ fontSize: 12, color: 'black', fontWeight: 700, padding: 5, flexWrap: 'wrap', textAlignVertical: 'top' }}>{user.bio}</Text>
           </View>
-        </View>
-   <View>
-   <View style={{ flexDirection: 'row', justifyContent: 'space-around', backgroundColor: "white", height: 45 }}>
-    {buttonsTaskbar.map((button) => (
-      <Pressable
-        key={button.id}
-        style={({ pressed }) => [
-          {
-            padding: 10,
-            borderBottomWidth: activeIndex === button.id ? 1 : 0,
-            backgroundColor: activeIndex === button.id ? "#F5F5F5" : "white",
-            flex: 1, // Chiếm hết toàn bộ chiều rộng của View
-          },
-          pressed && { opacity: 0.5 },
-        ]}
-        onPress={() => setActiveIndex(button.id)}
-      >
-        <Text style={{ textAlign: 'center', fontWeight: activeIndex === button.id ? 'bold' : 'normal' }}>
-          {button.title}
-        </Text>
-      </Pressable>
-    ))}
-  </View>
-   </View>
-  <View style={{backgroundColor: "white", height: "100%"}}>
-  {activeIndex === 0 && (
-    <View style={{ flex: 1 }}>
-    <FlatList
-      data={posts}
-      renderItem={renderItemPost}
-      keyExtractor={({ id }) => id}
-      style={{ flex: 1 }}
-    />
-  </View>
-  )}
-  {activeIndex === 1  && (
-    <View style={{ flex: 1 }}>
-    <FlatList
-      data={followers}
-      renderItem={renderItem}
-      keyExtractor={({ id }) => id.toString()}
-    />
-  </View>
-  )}
-  {activeIndex === 2 && (
-     <View style={{ flex: 1 }}>
-     <FlatList
-       data={followers}
-       renderItem={renderItem}
-       keyExtractor={({ id }) => id.toString()}
-     />
-   </View>
-  )}
-  
-  </View>
-  </ScrollView>
-  
-    </>
+    </View>
   );
-};
+}
+const TaskBarcomponent=({currentButton,setCurrentButton,buttonWidth,setButtonWidth,translateValue ,setTranslateValue, translateXRef,selectedButtons,setSelectedButtons,selectButton,onButtonLayout})=>{
+  return(
+    <View>
+      <View style={styles.taskBar}>
+         <TouchableOpacity style={[styles.button, selectedButtons[0] ? styles.activeButton : null]}
+           onLayout={onButtonLayout}
+           onPress={() => selectButton(0)}
+           >
+         <Text style={[styles.text, { fontWeight: selectedButtons[0] ? 'bold' : 'normal', fontSize: selectedButtons[0] ? 18 : 16 }]} >Post</Text>
+         </TouchableOpacity>
 
+         <TouchableOpacity
+           style={[styles.button, selectedButtons[1] ? styles.activeButton : null]}
+           onLayout={onButtonLayout}
+          onPress={() => selectButton(1)}
+         >
+         <Text style={[styles.text, { fontWeight: selectedButtons[1] ? 'bold' : 'normal', fontSize: selectedButtons[1] ? 18 : 16 }]} >Follower</Text>
+        </TouchableOpacity>
+
+    <TouchableOpacity
+      style={[styles.button, selectedButtons[2] ? styles.activeButton : null]}
+      onLayout={onButtonLayout}
+      onPress={() => selectButton(2)}
+    >
+      <Text style={[styles.text, { fontWeight: selectedButtons[2] ? 'bold' : 'normal', fontSize: selectedButtons[2] ? 18 : 16 }]} >Following</Text>
+    </TouchableOpacity>
+    
+    <View style={styles.lineContainer}>
+      <Animated.View
+        ref={translateXRef}
+        style={[
+          styles.line, 
+          { 
+            width: buttonWidth,
+            transform: [{ translateX: translateValue }]
+          }
+        ]}
+      />
+    </View>
+  </View>
+    </View>
+  );
+}
 const styles = StyleSheet.create({
-  introView: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "yellow",
-    width: "100%",
-    height: 250,
-    margin: 0,
-  },
-  profileview: {
-    backgroundColor: "white",
-    width: "100%",
-    height: 120,
-    margin: 0,
+  hander:{
     flexDirection: 'row',
+    alignItems: 'center',
+   height:'20%',
   },
   button: {
-    backgroundColor: "#fff",
-    width: 100,
-    height: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    
-  },
-  header: {
-    backgroundColor: "white",
-    height: 45,
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    margin: 0,
-
-},
-  title: {
-    color: '#fff',
-    fontSize: 24,
+    paddingVertical: 10,
+  },
+  activeText: {
     fontWeight: 'bold',
-    marginBottom: 32,
+    color: '#000',
   },
-  buttonLeft: {
-    alignSelf: 'flex-start',
-    height:40,
-    backgroundColor:"white",
-    width:60,
-    justifyContent: 'center',
-    
+  lineContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 3,
   },
-  buttonRight: {
-    alignSelf: 'flex-end',
-    height:40,
-    backgroundColor:"white",
-    width:60,
-    ustifyContent: 'center',
+  line: {
+    height: 3,
+    backgroundColor: "#f27e35",    
   },
-  title: {
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight:900,
-    color:"black",
-
+  profile: {
+    flexDirection: 'row',
+    height: 120,
   },
-  taskbar: {
-    backgroundColor: '#f2ba35',
-    height: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
+  taskBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    margin: 0,
+    alignItems: 'center',
+    height: 50,
+    backgroundColor: '#f5f5f5',
+    borderBottomWidth: 2,
+    borderBottomColor: '#d9d9d9',
+    paddingHorizontal: 20,
+  },
 
-  },
-  buttonFollow :{
-    flexDirection: 'row',
-    flex:3,
-    backgroundColor: "#f27e35",
-     marginLeft:25,
-     marginRight:25,
-    padding: 5,
-    justifyContent: 'center',
-    borderRadius:10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 10,
-      height: 10,
-    },
-    shadowOpacity: 0.8,
-    shadowRadius: 10,
-    elevation: 5,
-  },
 });
-export default ProfileScreen;
