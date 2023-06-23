@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
-import axios from 'axios';
+import axios from "axios";
 import { api } from "../api/api";
 
 const LoginScreen = ({ navigation, route }) => {
@@ -16,7 +16,7 @@ const LoginScreen = ({ navigation, route }) => {
 
     try {
       // Lấy thông tin tất cả người dùng từ server
-      const users = await api.getAllUsers(); 
+      const users = await api.getAllUsers();
 
       // Tìm kiếm người dùng với email và password tương ứng
       const user = users.find(
@@ -25,7 +25,7 @@ const LoginScreen = ({ navigation, route }) => {
 
       if (user) {
         console.log(user);
-        navigation.navigate("Profile", { user });
+        navigation.navigate("Home");
       } else {
         alert("Invalid email or password");
       }
@@ -35,7 +35,6 @@ const LoginScreen = ({ navigation, route }) => {
       console.error(error);
     }
     //navigation.navigate('Profile');
-
   };
 
   const handleRegister = () => {
