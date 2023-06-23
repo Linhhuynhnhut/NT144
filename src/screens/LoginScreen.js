@@ -1,17 +1,45 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+import axios from 'axios';
+import { api } from "../api/api";
 
 const LoginScreen = ({ navigation, route }) => {
-  const [email, setEmail] = useState("");
+  const [mail, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Handle login logic here
-    navigation.navigate("Home");
+    if (mail === "" || password === "") {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    try {
+      // Lấy thông tin tất cả người dùng từ server
+      const users = await api.getAllUsers(); 
+
+      // Tìm kiếm người dùng với email và password tương ứng
+      const user = users.find(
+        (user) => user.mail === mail && user.password === password
+      );
+
+      if (user) {
+        console.log(user);
+        navigation.navigate("Profile", { user });
+      } else {
+        alert("Invalid email or password");
+      }
+    } catch (error) {
+      //handle error
+      alert("An error occurred. Please try again.");
+      console.error(error);
+    }
+    //navigation.navigate('Profile');
+
   };
 
   const handleRegister = () => {
-    navigation.navigate("Search");
+    navigation.navigate("Register");
   };
 
   return (
@@ -20,7 +48,7 @@ const LoginScreen = ({ navigation, route }) => {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        value={email}
+        value={mail}
         onChangeText={(text) => setEmail(text)}
         keyboardType="email-address"
         autoCapitalize="none"
