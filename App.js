@@ -15,34 +15,30 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const homeName = "Home";
-const searchName = "Search";
-const profileName = "Profile";
-
-const AppStack = () => {
-  return (
-    <>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="Introduction" component={IntroScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-      </Stack.Navigator>
-    </>
-  );
-};
+// const AppStack = () => {
+//   return (
+//     <>
+//       <Stack.Navigator
+//         screenOptions={{
+//           headerShown: false,
+//         }}
+//       >
+//         <Stack.Screen name="Introduction" component={IntroScreen} />
+//         <Stack.Screen name="Login" component={LoginScreen} />
+//         <Stack.Screen name="Home" component={HomeScreen} />
+//         <Stack.Screen name="Search" component={SearchScreen} />
+//         <Stack.Screen name="Profile" component={ProfileScreen} />
+//         <Stack.Screen name="Register" component={RegisterScreen} />
+//       </Stack.Navigator>
+//     </>
+//   );
+// };
 
 export default function App() {
   return (
     <>
       <NavigationContainer>
-        <Tab.Navigator
+        {/* <Tab.Navigator
           initialRouteName={AppStack}
           screenOptions={({ route }) => ({
             headerShown: false,
@@ -76,7 +72,19 @@ export default function App() {
           <Tab.Screen name="homeName" component={HomeScreen} />
           <Tab.Screen name="searchName" component={SearchScreen} />
           <Tab.Screen name="profileName" component={ProfileScreen} />
-        </Tab.Navigator>
+        </Tab.Navigator> */}
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Introduction" component={IntroScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Search" component={SearchScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+        </Stack.Navigator>
       </NavigationContainer>
     </>
   );

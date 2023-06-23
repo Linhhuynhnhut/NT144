@@ -39,49 +39,40 @@ const IntroScreen = ({ navigation, route }) => {
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
-    const currentIndex = Math.round(contentOffsetX / width);
+    const currentIndex = Math.round(contentOffsetX / 130);
     setCurrentSlideIndex(currentIndex);
   };
-
-  //Get data
-  useEffect(() => {
-    const getData = async () => {
-      const data = await api.getAllUsers();
-      console.log("data>>>", data);
-      setUserArr(data);
-    };
-
-    getData();
-  }, []);
 
   return (
     <>
       <View style={styles.introView}>
         <View style={styles.imageView}>
           <FlatList
-            onMomentumScrollEnd={updateCurrentSlideIndex}
+            onMomentumScrollEnd={(e) => updateCurrentSlideIndex(e)}
             pagingEnabled
             data={slides}
             renderItem={({ item }) => <Item item={item} />}
             //contentContainerStyle={{ height: height * 0.75 }}
             horizontal
-            showsHorizontalScrollIndicator={false}
+            showsHorizontalScrollIndicator={true}
             //style={{ backgroundColor: "#fff" }}
           />
         </View>
         <View style={styles.indicatorContainer}>
-          {slides.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.indicator,
-                currentSlideIndex == index && {
-                  backgroundColor: "#f27e35",
-                  width: 25,
-                },
-              ]}
-            />
-          ))}
+          {slides.map((_, index) => {
+            return (
+              <View
+                key={index}
+                style={[
+                  styles.indicator,
+                  currentSlideIndex == index && {
+                    backgroundColor: "#f27e35",
+                    width: 25,
+                  },
+                ]}
+              />
+            );
+          })}
         </View>
         <Text style={styles.title}>Delicious Food!</Text>
         <Text style={styles.discription}>
