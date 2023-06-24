@@ -22,9 +22,12 @@ export const api = {
     const url = "/follow";
     return axiosClient.get(url);
   },
-
   getAllComments: () => {
     const url = "/comment";
+    return axiosClient.get(url);
+  },
+  getAllReactions: () => {
+    const url = "/reaction";
     return axiosClient.get(url);
   },
 
@@ -37,11 +40,24 @@ export const api = {
     const url = "/post/";
     return axiosClient.post(url, payload);
   },
+  addComment: (payload) => {
+    const url = "/comment/";
+    return axiosClient.post(url, payload);
+  },
+  addReaction: (payload) => {
+    const url = "/reaction/";
+    return axiosClient.post(url, payload);
+  },
 
   // PUT / UPDATE
   updateUser: (ID, payload) => {
-    console.log("payload>>>>", payload);
     const url = "/user/" + String(ID);
     return axiosClient.put(url, payload);
+  },
+
+  // DELETE
+  deleteReaction: (ID) => {
+    const url = "/reaction/" + String(ID);
+    return axiosClient.delete(url);
   },
 };

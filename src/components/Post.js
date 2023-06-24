@@ -7,6 +7,7 @@ import {
   FlatList,
   Modal,
   TouchableWithoutFeedback,
+  TextInput,
 } from "react-native";
 import { api } from "../api/api"; // import api
 import React, { useState, useEffect } from "react";
@@ -32,14 +33,15 @@ const ImgPost = ({ src, index }) => (
 );
 
 const Cmt = ({ cmt }) => {
-  console.log("comment in Cmt", cmt);
+  // console.log("comment in Cmt", cmt);
   return (
     <View
       style={{
-        //backgroundColor: "#bcdcda",
         flexDirection: "row",
-        marginTop: 15,
-        alignItems: "center",
+        marginTop: 10,
+        padding: 5,
+        borderRadius: 10,
+        backgroundColor: "white",
       }}
     >
       <Image
@@ -47,6 +49,7 @@ const Cmt = ({ cmt }) => {
           resizeMode: "stretch",
           width: 40,
           height: 40,
+          marginTop: 5,
           borderRadius: 50,
           borderWidth: 2,
           borderColor: "black",
@@ -56,8 +59,7 @@ const Cmt = ({ cmt }) => {
       <View
         style={{
           paddingLeft: 10,
-          width: 200,
-          //backgroundColor: "#bcbcbc",
+          width: "85%",
         }}
       >
         <Text
@@ -68,7 +70,13 @@ const Cmt = ({ cmt }) => {
         >
           {cmt.name}
         </Text>
-        <Text>{cmt.content}</Text>
+        <Text
+          style={{
+            textAlign: "justify",
+          }}
+        >
+          {cmt.content}
+        </Text>
       </View>
     </View>
   );
@@ -77,15 +85,27 @@ const Cmt = ({ cmt }) => {
 const Post = ({ post, avt, user }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [cmts, setCmts] = useState(null);
+  const [text, setText] = useState("");
+  const [reaction, setReaction] = useState(false);
+  const [reactionCount, setReactionCount] = useState(null);
+  const [height, setHeight] = useState(0);
 
   useEffect(() => {
     const getData = async () => {
-      //1. Lấy tất cả comment và user
+      //1. Lấy tất cả comment và user và reaction
       const allComments = await api.getAllComments();
       const allUsers = await api.getAllUsers();
+      const allReactions = await api.getAllReactions();
 
-      //2. Lọc ra các comment của bài Post
+      //2. Lọc ra các comment của bài Post, có thả tim ko
       const comments = allComments.filter((item) => item.post === post?._id);
+      const thisReaction =
+        allReactions.find((item) => {
+          return item.post === post?._id && item.user === user._id;
+        }) || null;
+      const postReaction = allReactions.filter(
+        (item) => item.post === post?._id
+      );
 
       //3. Ứng với mỗi comment => lấy ra userId để kết với thông tin user
       const commentsWithInfo = comments.map((cmt) => {
@@ -98,20 +118,18 @@ const Post = ({ post, avt, user }) => {
         };
       });
 
-      //loc
-      // const filteredArray = newAllUsers.filter((item) =>
-      //   comment.some((user) => user?.user === item?.user)
-      // );
-      console.log("comment>>>", commentsWithInfo);
-      // console.log("allUserArr>>>>>>>>", newAllUsers);
-      // console.log("filtered>>>>>>>>", filteredArray);
+      // Nếu có reaction thì cho màu đỏ
+      if (thisReaction === null) setReaction(false);
+      else setReaction(true);
+
+      // số tim
+      setReactionCount(postReaction);
 
       setCmts(commentsWithInfo);
-      // setUserCmt(filteredArray);
     };
 
     getData();
-  }, []);
+  }, [cmts?.length, reaction]);
 
   return (
     <>
@@ -210,17 +228,6 @@ const Post = ({ post, avt, user }) => {
               keyExtractor={(item) => item.id}
             />
           </View>
-
-          {/* <Image
-            source={{ uri: post?.image[0] }}
-            style={{
-              width: 300,
-              height: 300,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            resizeMode="stretch"
-          /> */}
         </View>
         <View
           style={{
@@ -230,14 +237,35 @@ const Post = ({ post, avt, user }) => {
             height: 40,
           }}
         >
-          <TouchableWithoutFeedback>
+          <Pressable
+            onPress={async () => {
+              if (!reaction) {
+                const newReact = {
+                  user: user._id,
+                  post: post._id,
+                };
+                const addReact = await api.addReaction(newReact);
+                console.log("addReact log>>>>", addReact);
+              } else {
+                const allReactions = await api.getAllReactions();
+                const thisReaction = allReactions.find((item) => {
+                  return item.post === post?._id && item.user === user._id;
+                });
+                try {
+                  api.deleteReaction(thisReaction._id);
+                  console.log("delReact log>>>>", thisReaction);
+                } catch (error) {}
+              }
+              setReaction(!reaction);
+            }}
+          >
             <View style={{ flexDirection: "row" }}>
               <AntDesign
                 name="heart"
                 size={25}
                 marginTop={5}
                 marginLeft={10}
-                color={"#ff4d4f"}
+                color={reaction ? "#ff4d4f" : "#000"}
               />
               <Text
                 style={{
@@ -250,10 +278,10 @@ const Post = ({ post, avt, user }) => {
                   paddingLeft: 5,
                 }}
               >
-                100
+                {reactionCount?.length}
               </Text>
             </View>
-          </TouchableWithoutFeedback>
+          </Pressable>
 
           <Pressable onPress={() => setModalVisible(true)}>
             <View style={{ flexDirection: "row" }}>
@@ -288,15 +316,7 @@ const Post = ({ post, avt, user }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <View
-              style={{
-                width: "100%",
-                height: 35,
-                //backgroundColor: "#abc345",
-                borderBottomWidth: 2,
-                borderBottomColor: "#d3d6db",
-              }}
-            >
+            <View style={styles.cmtHeader}>
               <Pressable
                 style={[styles.buttonClose]}
                 onPress={() => {
@@ -305,30 +325,66 @@ const Post = ({ post, avt, user }) => {
               >
                 <Icon name="close-circle-outline" size={30} />
               </Pressable>
-              <Text
-                style={{
-                  fontSize: 20,
-                  color: "black",
-                  //backgroundColor: "#000",
-                  height: "100%",
-                  width: "80%",
-                  fontWeight: "900",
-                }}
-              >
-                Comments
-              </Text>
+              <Text style={styles.titleModal}>Comments</Text>
             </View>
             <View
               style={{
                 maxHeight: 500,
-                backgroundColor: "#bddesd",
+                width: "100%",
               }}
             >
               <FlatList
+                style={[styles.cmtArr]}
                 data={cmts}
                 renderItem={({ item }) => <Cmt cmt={item} />}
                 keyExtractor={(item) => item.id}
               />
+            </View>
+            <View style={styles.inputView}>
+              <TextInput
+                placeholder="Nhập bình luận..."
+                multiline={true}
+                onChangeText={(text) => setText(text)}
+                onContentSizeChange={(event) =>
+                  setHeight(event.nativeEvent.contentSize.height)
+                }
+                style={[styles.input, { height: Math.max(35, height) }]}
+                value={text}
+              />
+              <Pressable
+                style={[styles.buttonSend]}
+                onPress={async () => {
+                  const newComment = text;
+                  const payloadComment = {
+                    user: user._id,
+                    content: newComment,
+                    post: post._id,
+                  };
+
+                  let postedComment;
+                  try {
+                    postedComment = await api.addComment(payloadComment);
+                  } catch (error) {
+                    console.log("error update user>>>", error.response.data);
+                  }
+                  // console.log("newCmt>>>>", payloadComment);
+
+                  // console.log("postedComment>>>", postedComment);
+
+                  //Kết thêm info vào postedComment
+                  const newCommentToState = {
+                    ...postedComment,
+                    avatar: user.avatar,
+                    name: user.nameUser,
+                  };
+
+                  //setCmt
+                  setCmts([...cmts, newCommentToState]);
+                  setText("");
+                }}
+              >
+                <Icon name="send-circle" size={30} />
+              </Pressable>
             </View>
           </View>
         </View>
@@ -350,7 +406,7 @@ const styles = StyleSheet.create({
     maxHeight: 500,
     width: "80%",
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: "#edeff2",
     borderRadius: 20,
     padding: 15,
     paddingTop: 10,
@@ -364,10 +420,51 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  cmtHeader: {
+    width: "100%",
+    height: 35,
+    //backgroundColor: "#abc345",
+    borderBottomWidth: 2,
+    borderBottomColor: "#d3d6db",
+  },
+  titleModal: {
+    fontSize: 20,
+    color: "black",
+    //backgroundColor: "#000",
+    height: "100%",
+    width: "80%",
+    fontWeight: "900",
+  },
+  cmtArr: {
+    maxHeight: 400,
+  },
   buttonClose: {
     //backgroundColor: "#2196F3",
     position: "absolute",
     right: "2%",
     top: -2,
+  },
+  inputView: {
+    width: 314,
+    height: 70,
+    borderTopWidth: 2,
+    borderTopColor: "#dcdfe3",
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    backgroundColor: "#edeff2",
+    marginTop: 10,
+  },
+  buttonSend: {
+    position: "absolute",
+    right: 15,
+    top: 15,
+  },
+  input: {
+    padding: 12,
+    paddingRight: 50,
+    margin: 10,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    maxHeight: 60,
   },
 });
