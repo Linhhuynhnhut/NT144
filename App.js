@@ -10,6 +10,7 @@ import HomeScreen from "./src/screens/HomeScreen";
 import SearchScreen from "./src/screens/SearchScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
+import PostScreen  from "./src/screens/PostScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Stack = createNativeStackNavigator();
@@ -84,6 +85,7 @@ export default function App() {
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Post" component={PostScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
