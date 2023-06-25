@@ -9,9 +9,11 @@ import {
   Image,
   FlatList,
   Modal,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import COLORS from "../consts/colors";
 import LinearGradient from "react-native-linear-gradient";
 
@@ -308,44 +310,13 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={{ fontSize: 12, color: "grey" }}>Following</Text>
               </View>
             </View>
+          
             <View style={{ height: 10 }}></View>
-            {/* <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Pressable
-                onPress={() => setIsPressed(!isPressed)} // Khi nhấn vào, thay đổi giá trị state hiện tại.
-                style={({ pressed }) => [
-                  { opacity: pressed ? 0.5 : 1 }, // Điều chỉnh opacity của Pressable khi người dùng nhấn vào.
-                ]}
-              >
-                {({ pressed }) => (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      borderRadius: 10,
-                      height: 50,
-                      width: 180,
-                      justifyContent: "center",
-                      backgroundColor: isPressed ? "#DCDCDC" : "#f27e35",
-                    }}
-                  >
-                    <FontAwesome5
-                      name={isPressed ? "user-check" : "user-plus"}
-                      size={30}
-                      color={pressed ? "red" : "black"}
-                    />
-                    <Text style={{ fontWeight: "bold", marginLeft: 10 }}>
-                      {isPressed ? "UnFollow" : "Follow"}
-                    </Text>
-                  </View>
-                )}
-              </Pressable>
-            </View> */}
+              <View style= {{flexDirection: "row",alignItems: "center",justifyContent: "center",}}>
+              <TouchableOpacity style={{height: 60, width: 60, borderWidth:2, borderRadius:10,alignItems: "center",justifyContent: "center",}}  onPress={() => navigation.navigate("Post", {})}>
+                <MaterialIcons name="add" size={50} color="black"/>
+              </TouchableOpacity>
+              </View>
           </View>
         </View>
         <View
