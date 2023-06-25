@@ -18,44 +18,14 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import avts from "../data/Avatar";
 
 const ImgPost = ({ src, index }) => (
-  <Image
-    style={{
-      width: "33%",
-      height: 100,
-      resizeMode: "stretch",
-      margin: 1,
-      borderWidth: 1,
-      borderColor: "black",
-      marginTop: 15,
-    }}
-    source={{ uri: src }}
-  />
+  <Image style={styles.imgPost} source={{ uri: src }} />
 );
 
 const Cmt = ({ cmt }) => {
   // console.log("comment in Cmt", cmt);
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        marginTop: 10,
-        padding: 5,
-        borderRadius: 10,
-        backgroundColor: "white",
-      }}
-    >
-      <Image
-        style={{
-          resizeMode: "stretch",
-          width: 40,
-          height: 40,
-          marginTop: 5,
-          borderRadius: 50,
-          borderWidth: 2,
-          borderColor: "black",
-        }}
-        source={{ uri: cmt.avatar }}
-      />
+    <View style={styles.cmtView}>
+      <Image style={styles.avatarUserCmt} source={{ uri: cmt.avatar }} />
       <View
         style={{
           paddingLeft: 10,
@@ -85,6 +55,7 @@ const Cmt = ({ cmt }) => {
 const Post = ({ post, avt, user }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [cmts, setCmts] = useState(null);
+  const [tags, setTags] = useState(null);
   const [text, setText] = useState("");
   const [reaction, setReaction] = useState(false);
   const [reactionCount, setReactionCount] = useState(null);
@@ -92,12 +63,13 @@ const Post = ({ post, avt, user }) => {
 
   useEffect(() => {
     const getData = async () => {
-      //1. Lấy tất cả comment và user và reaction
+      // Lấy tất cả comment và user và reaction và tag
       const allComments = await api.getAllComments();
       const allUsers = await api.getAllUsers();
       const allReactions = await api.getAllReactions();
+      const allTags = await api.getAllTags();
 
-      //2. Lọc ra các comment của bài Post, có thả tim ko
+      //2. Lọc ra các comment của bài Post, có thả tim ko, tag nào được sử dụng
       const comments = allComments.filter((item) => item.post === post?._id);
       const thisReaction =
         allReactions.find((item) => {
@@ -106,6 +78,7 @@ const Post = ({ post, avt, user }) => {
       const postReaction = allReactions.filter(
         (item) => item.post === post?._id
       );
+      const postTags = post.tags;
 
       //3. Ứng với mỗi comment => lấy ra userId để kết với thông tin user
       const commentsWithInfo = comments.map((cmt) => {
@@ -118,13 +91,22 @@ const Post = ({ post, avt, user }) => {
         };
       });
 
+      // Ứng với mỗi tag, lấy ra tagName
+      const tagsInfo = postTags.map((tag) => {
+        const thisTag = allTags.find((item) => item._id === tag);
+
+        return {
+          tag,
+          nameTag: thisTag?.nameTag,
+        };
+      });
       // Nếu có reaction thì cho màu đỏ
       if (thisReaction === null) setReaction(false);
       else setReaction(true);
 
       // số tim
       setReactionCount(postReaction);
-
+      setTags(tagsInfo);
       setCmts(commentsWithInfo);
     };
 
@@ -133,38 +115,12 @@ const Post = ({ post, avt, user }) => {
 
   return (
     <>
-      <View
-        style={{
-          padding: 10,
-          borderBottomWidth: 1,
-          borderBottomColor: "#ccc",
-          backgroundColor: "white",
-        }}
-      >
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "black",
-            borderRadius: 10,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 10,
-          }}
-        >
+      <View style={styles.postComponent}>
+        <View style={styles.postView}>
           <View style={{ position: "absolute", right: 0, top: 10 }}>
             <Fontisto name="more-v-a" size={30} marginRight={20} />
           </View>
-          <View
-            style={{
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-              width: "100%",
-              padding: 10,
-              display: "flex",
-              flexDirection: "row",
-              //backgroundColor: "#000",
-            }}
-          >
+          <View style={styles.headerPost}>
             <Image
               style={{
                 width: 40,
@@ -197,9 +153,43 @@ const Post = ({ post, avt, user }) => {
               </Text>
             </View>
           </View>
+          <View
+            style={{
+              width: "80%",
+              backgroundColor: "#faeccd",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: 800,
+                padding: 10,
+                margin: 5,
+                backgroundColor: "#F7D600",
+                borderRadius: 10,
+                color: "#F48100",
+              }}
+            >
+              Khẩu phần: 4 người
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: 800,
+                padding: 10,
+                margin: 5,
+                backgroundColor: "#F7D600",
+                borderRadius: 10,
+                color: "#F48100",
+              }}
+            >
+              Thời gian nấu: 2 tiếng
+            </Text>
+          </View>
 
           <Text style={{ fontSize: 20, fontWeight: 800 }}>{post.title}</Text>
-
           <Text
             style={{
               padding: 25,
@@ -227,12 +217,24 @@ const Post = ({ post, avt, user }) => {
               )}
               keyExtractor={(item) => item.id}
             />
+            <View style={styles.tagView}>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={tags}
+                renderItem={({ item }) => (
+                  <Text style={styles.tag}>{item.nameTag}</Text>
+                )}
+                keyExtractor={(item) => item.id}
+                style={{ maxWidth: 500 }}
+              />
+            </View>
           </View>
         </View>
         <View
           style={{
             flexDirection: "row",
-            backgroundColor: "white",
+            backgroundColor: "#faeccd",
             borderRadius: 10,
             height: 40,
           }}
@@ -245,7 +247,6 @@ const Post = ({ post, avt, user }) => {
                   post: post._id,
                 };
                 const addReact = await api.addReaction(newReact);
-                console.log("addReact log>>>>", addReact);
               } else {
                 const allReactions = await api.getAllReactions();
                 const thisReaction = allReactions.find((item) => {
@@ -253,7 +254,6 @@ const Post = ({ post, avt, user }) => {
                 });
                 try {
                   api.deleteReaction(thisReaction._id);
-                  console.log("delReact log>>>>", thisReaction);
                 } catch (error) {}
               }
               setReaction(!reaction);
@@ -305,6 +305,9 @@ const Post = ({ post, avt, user }) => {
           </Pressable>
         </View>
       </View>
+
+      {/* // Modal comment */}
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -396,11 +399,27 @@ const Post = ({ post, avt, user }) => {
 export default Post;
 
 const styles = StyleSheet.create({
+  postComponent: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EDAE32",
+    backgroundColor: "#faeccd",
+    marginTop: -1,
+  },
+  postView: {
+    borderWidth: 1,
+    borderColor: "#EDAE32",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    marginTop: -20,
   },
   modalView: {
     maxHeight: 500,
@@ -411,7 +430,7 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingTop: 10,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "green",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -466,5 +485,53 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 10,
     maxHeight: 60,
+  },
+  cmtView: {
+    flexDirection: "row",
+    marginTop: 10,
+    padding: 5,
+    borderRadius: 10,
+    backgroundColor: "white",
+  },
+  avatarUserCmt: {
+    resizeMode: "stretch",
+    width: 40,
+    height: 40,
+    marginTop: 5,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: "black",
+  },
+  headerPost: {
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    width: "100%",
+    padding: 10,
+    display: "flex",
+    flexDirection: "row",
+    //backgroundColor: "#000",
+  },
+  imgPost: {
+    width: "33%",
+    height: 100,
+    resizeMode: "stretch",
+    margin: 1,
+    borderWidth: 1,
+    borderColor: "black",
+    marginTop: 15,
+  },
+  tagView: {
+    width: "100%",
+    height: 40,
+    //backgroundColor: "black",
+    marginTop: 10,
+  },
+  tag: {
+    marginRight: 10,
+    padding: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    backgroundColor: "#F6D700",
+    borderRadius: 10,
   },
 });

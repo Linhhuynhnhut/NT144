@@ -22,6 +22,10 @@ export const api = {
     const url = "/follow";
     return axiosClient.get(url);
   },
+  getAllTags: () => {
+    const url = "/tag";
+    return axiosClient.get(url);
+  },
   getAllComments: () => {
     const url = "/comment";
     return axiosClient.get(url);
