@@ -14,9 +14,9 @@ import {
   Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import COLORS from "../../consts/colors";
-import categories from "../../consts/categories";
-import foods from "../../consts/foods";
+import COLORS from "../consts/colors";
+import categories from "../consts/categories";
+import foods from "../consts/foods";
 const { width } = Dimensions.get("screen");
 const cardWidth = width / 2 - 20;
 
