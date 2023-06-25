@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import { StyleSheet, Text, View, Pressable, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -11,6 +11,9 @@ import SearchScreen from "./src/screens/SearchScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
+//import AsyncStorage from '@react-native-async-storage/async-storage';
+
+LogBox.ignoreLogs(['Using Math.random is not cryptographically secure! Use bcrypt.setRandomFallback to set a PRNG.']);
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
