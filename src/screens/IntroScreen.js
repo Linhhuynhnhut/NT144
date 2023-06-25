@@ -8,6 +8,8 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // import Carousel from "react-native-snap-carousel";
 import React, { useState, useEffect } from "react";
 
@@ -34,6 +36,23 @@ const Item = ({ item }) => {
 };
 
 const IntroScreen = ({ navigation, route }) => {
+
+  const [userToken, setUserToken] = useState(null);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem("userToken");
+        setUserToken(token);
+      } catch (error) {
+        console.log("Cannot check user session:", error);
+      }
+    };
+
+    checkLoginStatus();
+
+  }, []);
+
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [userArr, setUserArr] = useState([]);
 
@@ -42,6 +61,14 @@ const IntroScreen = ({ navigation, route }) => {
     const currentIndex = Math.round(contentOffsetX / 130);
     setCurrentSlideIndex(currentIndex);
   };
+
+  const pressStart = () => {
+    if (userToken) {
+      navigation.navigate("Login"); //Nếu tồn tại thì chuyển đến Home
+    } else {
+      navigation.navigate("Login");
+    }
+  }
 
   return (
     <>
@@ -80,7 +107,7 @@ const IntroScreen = ({ navigation, route }) => {
         </Text>
         <Pressable
           style={styles.button}
-          onPress={() => navigation.navigate("Login", {})}
+          onPress={pressStart}
         >
           <Text style={{ color: "#fff", fontWeight: "bold" }}>START</Text>
         </Pressable>

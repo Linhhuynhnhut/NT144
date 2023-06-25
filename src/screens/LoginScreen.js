@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
-import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNbcrypt from 'react-native-bcrypt';
 import { api } from "../api/api";
 
 const LoginScreen = ({ navigation, route }) => {
@@ -19,13 +20,33 @@ const LoginScreen = ({ navigation, route }) => {
       const users = await api.getAllUsers();
 
       // Tìm kiếm người dùng với email và password tương ứng
-      const user = users.find(
-        (user) => user.mail === mail && user.password === password
-      );
+      const user = users.find((user) => user.mail === mail /*&& user.password === password*/);
 
-      if (user) {
-        console.log(user);
-        navigation.navigate("Home");
+      if (user) {       
+        // try {
+        //   await AsyncStorage.setItem('userToken', mail); 
+        // } catch (error) {
+        //   console.error('Error when saving user session:', error);
+        // }  
+        // navigation.navigate('Home');
+        RNbcrypt.compare(password, user.password, async (error, isMatch) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+
+          if (isMatch) {
+            try {
+              await AsyncStorage.setItem('userToken', mail); 
+            } catch (error) {
+              console.error('Error when saving user session:', error);
+            }
+        
+            navigation.navigate('Home');
+          } else {
+            alert("Invalid email or password");
+          }
+        });
       } else {
         alert("Invalid email or password");
       }

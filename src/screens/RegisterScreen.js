@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNbcrypt from 'react-native-bcrypt';
+//import { setRandomFallback } from 'react-native-get-random-values';
+
 import { api } from "../api/api";
 
 const RegisterScreen = ({ navigation, route }) => {
@@ -8,12 +12,15 @@ const RegisterScreen = ({ navigation, route }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  // setRandomFallback((callback) => {
+  //   const randomBytes = require('react-native-get-random-values').getRandomBytes(16);
+  //   callback(randomBytes);
+  // });
+  
   //const [error, setError] = useState("");
 
   const handleRegister = async () => {
-    // Handle registration logic here
-    //navigation.navigate('Home');
-    // Kiểm tra các trường thông tin
+    // check fields
     if (nameUser === "" || mail === "" || password === "" || confirmPassword === "" || phoneNumber === "") {
       alert("Please fill in all fields");
       return;
@@ -24,27 +31,38 @@ const RegisterScreen = ({ navigation, route }) => {
       return;
     }
     try {
+      //Sử dụng bcrypt để mã hóa mật khẩu
+      RNbcrypt.hash(password, 10, async (error, hashedPassword) => {
+      if (error) {
+        // Xử lý lỗi khi mã hóa mật khẩu
+        console.error(error);
+        return;
+      }
+
       const payload = {
         nameUser,
         mail,
-        password,
+        password: hashedPassword,
         phoneNumber,
       };
       // Gửi yêu cầu đăng ký người dùng
       await api.addUser(payload);
 
       // Xử lý đăng ký thành công
-      //console.log(response.data);
-      //navigation.navigate("Home");
       const users = await api.getAllUsers(); 
-
       const user = users.find((user) => user.mail === mail);
+
       if (user) {
-        console.log(user);
-        navigation.navigate("Profile", { user });
+        try {
+          await AsyncStorage.setItem('userToken', mail); 
+        } catch (error) {
+          console.error('Error when saving user session:', error);
+        }
+        console.log({user});
+        navigation.navigate('Home',{user});
       }
+    });
     } catch (error) {
-      // Xử lý lỗi
       console.error(error);
     }
   };
