@@ -14,124 +14,25 @@ import {
 import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import COLORS from "../consts/colors";
+import LinearGradient from "react-native-linear-gradient";
+
 const ProfileScreen = ({ navigation }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const buttonsTaskbar = [
-    { id: 0, title: "Post", color: "white", boderTop: 0 },
-    { id: 1, title: "Follower", color: "white", boderTop: 0 },
-    { id: 2, title: "Following", color: "white", boderTop: 0 },
+    { id: 0, title: "Bài viết", color: "white", boderTop: 0 },
+    { id: 1, title: "Đã thích", color: "white", boderTop: 0 },
+    // { id: 2, title: "Following", color: "white", boderTop: 0 },
   ];
   // const [selectedButton, setSelectedButton] = useState(buttonsTaskbar[0]);
   // const selectButton = (button) => {
   //   setSelectedButton(button);
   // };
-  const [followers, setFollowers] = useState([
-    {
-      id: 1,
-      name: "An",
-      username: "id.usernam1",
-      post: "23",
-      follower: "123K",
-      image: require("../../assets/image/avatar1.png"),
-    },
-    {
-      id: 2,
-      name: "Bình",
-      username: "id.usernam2",
-      post: "223",
-      follower: "223K",
-      image: require("../../assets/image/avatar2.jpg"),
-    },
-    {
-      id: 3,
-      name: "Cường",
-      username: "id.usernam3",
-      post: "33",
-      follower: "15K",
-      image: require("../../assets/image/avatar3.jpg"),
-    },
-    {
-      id: 4,
-      name: "Đạt",
-      username: "id.usernam4",
-      post: "63",
-      follower: "163K",
-      image: require("../../assets/image/avatar4.jpg"),
-    },
-    {
-      id: 5,
-      name: "Evelyn",
-      username: "id.usernam5",
-      post: "73",
-      follower: "93K",
-      image: require("../../assets/image/avatar5.jpg"),
-    },
-    {
-      id: 6,
-      name: "Phương",
-      username: "id.usernam6",
-      post: "43",
-      follower: "13K",
-      image: require("../../assets/image/avatar6.jpg"),
-    },
-    {
-      id: 7,
-      name: "Linh",
-      username: "id.usernam8",
-      post: "73",
-      follower: "623K",
-      image: require("../../assets/image/avatar7.jpg"),
-    },
-    {
-      id: 8,
-      name: "Huy",
-      username: "id.usernam9",
-      post: "25",
-      follower: "23K",
-      image: require("../../assets/image/avatar8.jpg"),
-    },
-    {
-      id: 10,
-      name: "Đức",
-      username: "id.usernam123",
-      post: "8",
-      follower: "12K",
-      image: require("../../assets/image/avatar10.jpg"),
-    },
-  ]);
-  const renderItem = ({ item }) => (
-    <View
-      style={{
-        flexDirection: "row",
-        borderBottomWidth: 1,
-        borderBottomColor: "#ccc",
-      }}
-    >
-      <View style={{ flex: 1, backgroundColor: "white", margin: 5 }}>
-        <Image
-          source={item.image}
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-            borderWidth: 1,
-            borderColor: "black",
-            marginLeft: 10,
-          }}
-        />
-      </View>
-      <View style={{ flex: 3, padding: 10, backgroundColor: "white" }}>
-        <Text style={{ fontSize: 18, fontWeight: "bold", color: "black" }}>
-          {item.name}
-        </Text>
-        <Text style={{ fontSize: 14, color: "black" }}>{item.username}</Text>
-      </View>
-    </View>
-  );
 
   const [modalVisible, setModalVisible] = useState(false);
   const [posts, setPosts] = useState(null);
+  const [postsLiked, setPostsLiked] = useState(null);
   const [user, setUser] = useState(null);
   const [profileInfo, setprofileInfo] = useState(null);
   const [isPressedAvt, setIsPressedAvt] = useState(0);
@@ -141,9 +42,12 @@ const ProfileScreen = ({ navigation }) => {
 
   useEffect(() => {
     const getData = async () => {
+      const allUsers = await api.getAllUsers();
       const user = await api.getUser("6492620f3379bee002a3345b");
       const follow = await api.getAllFollows();
-      const posts = await api.getAllPosts();
+      const posts = await api.getAllPosts(); // có _id
+      const allReactions = await api.getAllReactions(); // có user, post
+
       //loc
       const followInfo = {
         follower: follow.filter((item) => item.followee === user?._id) || [],
@@ -152,15 +56,30 @@ const ProfileScreen = ({ navigation }) => {
       const myPosts = posts.filter((item) => item.user === user?._id) || [];
       const findItem = avts.find((item) => item?.image?.uri === user?.avatar);
 
-      console.log("user>>>", user);
-      console.log("followers>>>", followInfo.follower.length);
-      console.log("followeing>>>", followInfo.following.length);
+      const postLikedIds = allReactions
+        .filter((item) => item.user === user?._id)
+        .map((r) => r?.post);
+
+      const postLiked = posts.filter((item) => {
+        return postLikedIds.includes(item._id);
+      });
+
+      // const followerInfo = followInfo.follower.map((user) => {
+      //   const thisFollower = allUsers.find((item) => item._id === user);
+
+      //   return {
+      //     tag,
+      //     nameTag: thisTag?.nameTag,
+      //   };
+      // });
+
       //console.log("mypost>>>", myPosts);
       setprofileInfo(followInfo);
       setUser(user);
       setAvt(findItem?.id);
       setIsPressedAvt(findItem?.id);
       setPosts(myPosts);
+      setPostsLiked(postLiked);
     };
 
     getData();
@@ -241,8 +160,6 @@ const ProfileScreen = ({ navigation }) => {
                 } catch (error) {
                   console.log("error update user>>>", error.response.data);
                 }
-                console.log("avt>>>>", avt);
-                console.log("isPressAvt>>>>", isPressedAvt);
               }}
             >
               <Icon name="check-decagram-outline" size={30} />
@@ -252,7 +169,11 @@ const ProfileScreen = ({ navigation }) => {
       </Modal>
 
       <View
-        style={{ height: 25, backgroundColor: "white", paddingTop: 20 }}
+        style={{
+          height: 25,
+          backgroundColor: COLORS.mainColorProfile,
+          paddingTop: 20,
+        }}
       ></View>
       <View style={styles.header}>
         <Pressable
@@ -286,38 +207,77 @@ const ProfileScreen = ({ navigation }) => {
           />
         </Pressable>
       </View>
-      <View stickyHeaderIndices={[3]}>
-        <View style={{ height: 10, backgroundColor: "white" }}></View>
+      <View stickyHeaderIndices={[3]} style={{ elevation: 5 }}>
+        <View style={{ height: 11, backgroundColor: "#F5EFE6" }}></View>
         <View style={styles.profileview}>
-          <View style={{ flex: 1 }}>
-            <Image
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-                borderWidth: 2,
-                borderColor: "black",
-                marginLeft: 10,
-              }}
-              source={avts[avt]?.image}
+          <Image
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              borderWidth: 2,
+              borderColor: "black",
+              right: 10,
+              zIndex: 4,
+            }}
+            source={avts[avt]?.image}
+          />
+          <Pressable
+            onPress={() => setModalVisible(true)}
+            style={styles.btnSetAvt}
+          >
+            <Icon
+              name="image-auto-adjust"
+              size={25}
+              marginTop={-20}
+              marginLeft={75}
+              backgroundColor={"#fff4"}
             />
-            <Pressable onPress={() => setModalVisible(true)}>
-              <Icon
-                name="image-auto-adjust"
-                size={25}
-                marginTop={-20}
-                marginLeft={75}
-                backgroundColor={"#fff9"}
-              />
-            </Pressable>
+          </Pressable>
+          <View style={{ padding: 0, zIndex: 4, top: 50, left: 20 }}>
+            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+              {user?.nameUser}
+            </Text>
+            <Text>Phone number: {user?.phoneNumber}</Text>
+            <Text>{user?.mail}</Text>
           </View>
-
-          <View style={{ flex: 3 }}>
+          <View
+            style={{
+              position: "absolute",
+              zIndex: 2,
+              backgroundColor: COLORS.mainColorProfile,
+              width: "90%",
+              height: 80,
+              top: 40,
+              marginBottom: 5,
+              borderTopRightRadius: 40,
+              borderTopLeftRadius: 40,
+              shadowColor: "#000",
+              elevation: 25,
+            }}
+          ></View>
+          <View
+            style={{
+              backgroundColor: COLORS.mainColorProfile,
+              width: "90%",
+              height: 50,
+              position: "absolute",
+              bottom: 5,
+              borderBottomRightRadius: 40,
+              borderBottomLeftRadius: 40,
+              paddingTop: 5,
+              alignItems: "center",
+              shadowOpacity: 0.9,
+              shadowColor: "#000",
+              elevation: 25,
+            }}
+          >
             <View
               style={{
                 flexDirection: "row",
-                justifyContent: "space-around",
-                alignItems: "flex-end",
+                justifyContent: "space-between",
+                // alignItems: "center",
+                width: "80%",
               }}
             >
               <View style={{ alignItems: "center" }}>
@@ -326,12 +286,16 @@ const ProfileScreen = ({ navigation }) => {
                 >
                   {posts?.length}
                 </Text>
-                <Text style={{ fontSize: 12, color: "grey" }}>Posts</Text>
+                <Text style={{ fontSize: 12, color: "grey" }}>User Posts</Text>
               </View>
 
               <View style={{ alignItems: "center" }}>
                 <Text
-                  style={{ fontStyle: "normal", fontSize: 18, fontWeight: 900 }}
+                  style={{
+                    fontStyle: "normal",
+                    fontSize: 18,
+                    fontWeight: 900,
+                  }}
                 >
                   {profileInfo?.follower.length}
                 </Text>
@@ -355,20 +319,19 @@ const ProfileScreen = ({ navigation }) => {
               </View>
           </View>
         </View>
-        <View style={{ paddingBottom: 10, backgroundColor: "white" }}>
-          <View style={{ paddingHorizontal: 10 }}>
-            <Text style={{ fontWeight: "bold" }}>{user?.nameUser}</Text>
-            <Text>Phone number: {user?.phoneNumber}</Text>
-            <Text>{user?.mail}</Text>
-          </View>
-        </View>
+        <View
+          style={{
+            backgroundColor: "#F5EFE6",
+          }}
+        ></View>
         <View>
           <View
             style={{
               flexDirection: "row",
               justifyContent: "space-around",
-              backgroundColor: "white",
+              backgroundColor: "#F5EFE6",
               height: 45,
+              // marginTop: -1,
             }}
           >
             {buttonsTaskbar.map((button) => (
@@ -376,10 +339,19 @@ const ProfileScreen = ({ navigation }) => {
                 key={button.id}
                 style={({ pressed }) => [
                   {
+                    borderTopRightRadius: 20,
+                    borderTopLeftRadius: 20,
                     padding: 10,
-                    borderBottomWidth: activeIndex === button.id ? 1 : 0,
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: activeIndex === button.id ? 5 : 0,
+                      height: activeIndex === button.id ? 5 : 0,
+                    },
+                    shadowOpacity: 0.8,
+                    shadowRadius: 10,
+                    elevation: 5,
                     backgroundColor:
-                      activeIndex === button.id ? "#F5F5F5" : "white",
+                      activeIndex === button.id ? "#faeccd" : "#FFCA48",
                     flex: 1, // Chiếm hết toàn bộ chiều rộng của View
                   },
                   pressed && { opacity: 0.5 },
@@ -400,7 +372,7 @@ const ProfileScreen = ({ navigation }) => {
         </View>
         <View
           style={{
-            backgroundColor: "white",
+            backgroundColor: "#faeccd",
             height: "68%",
           }}
         >
@@ -415,14 +387,10 @@ const ProfileScreen = ({ navigation }) => {
           )}
           {activeIndex === 1 && (
             <View style={{ flex: 1 }}>
-              <FlatList
-                data={followers}
-                renderItem={renderItem}
-                keyExtractor={({ id }) => id.toString()}
-              />
+              <FlatList data={postsLiked} renderItem={renderItemPost} />
             </View>
           )}
-          {activeIndex === 2 && (
+          {/* {activeIndex === 2 && (
             <View style={{ flex: 1 }}>
               <FlatList
                 data={followers}
@@ -430,61 +398,55 @@ const ProfileScreen = ({ navigation }) => {
                 keyExtractor={({ id }) => id.toString()}
               />
             </View>
-          )}
+          )} */}
         </View>
       </View>
     </>
   );
 };
 const styles = StyleSheet.create({
-  introView: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "yellow",
-    width: "100%",
-    height: 250,
-    margin: 0,
-  },
   profileview: {
-    backgroundColor: "white",
+    backgroundColor: "#F5EFE6",
     width: "100%",
-    height: 120,
-    margin: 0,
+    height: 180,
+    justifyContent: "center",
+    paddingBottom: 10,
+    marginBottom: 20,
     flexDirection: "row",
   },
   button: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f2ba35",
     width: 100,
     height: 30,
     alignItems: "center",
     justifyContent: "center",
   },
   header: {
-    backgroundColor: "white",
+    backgroundColor: COLORS.mainColorProfile,
     height: 45,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    margin: 0,
   },
   title: {
-    color: "#fff",
+    color: COLORS.mainColorProfile,
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 32,
+    backgroundColor: COLORS.mainColorProfile,
   },
   buttonLeft: {
     alignSelf: "flex-start",
     height: 40,
-    backgroundColor: "white",
+    backgroundColor: COLORS.mainColorProfile,
     width: 60,
     justifyContent: "center",
   },
   buttonRight: {
     alignSelf: "flex-end",
     height: 40,
-    backgroundColor: "white",
+    backgroundColor: COLORS.mainColorProfile,
     width: 60,
     ustifyContent: "center",
   },
@@ -577,6 +539,12 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "center",
+  },
+  btnSetAvt: {
+    zIndex: 4,
+    position: "absolute",
+    top: 100,
+    left: 40,
   },
   avatar: {
     width: 120,
