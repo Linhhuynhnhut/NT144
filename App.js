@@ -7,17 +7,19 @@ import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import IntroScreen from "./src/screens/IntroScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import HomeScreen from "./src/screens/HomeScreen";
+import Home from "./src/screens/Home";
 import SearchScreen from "./src/screens/SearchScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
-import PostScreen  from "./src/screens/PostScreen";
+import PostScreen from "./src/screens/PostScreen";
 import Ionicons from "react-native-vector-icons/Ionicons";
 //import AsyncStorage from '@react-native-async-storage/async-storage';
 
-LogBox.ignoreLogs(['Using Math.random is not cryptographically secure! Use bcrypt.setRandomFallback to set a PRNG.']);
+LogBox.ignoreLogs([
+  "Using Math.random is not cryptographically secure! Use bcrypt.setRandomFallback to set a PRNG.",
+]);
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
 
 // const AppStack = () => {
 //   return (
@@ -84,7 +86,7 @@ export default function App() {
         >
           <Stack.Screen name="Introduction" component={IntroScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />

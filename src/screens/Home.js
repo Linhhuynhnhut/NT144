@@ -8,9 +8,9 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
-import { CategoryCard, TrendingCard } from "../../components";
+import { CategoryCard, TrendingCard } from "../components";
 
-import { FONTS, COLORS, SIZES, icons, images, dummyData } from "../../constants";
+import { FONTS, COLORS, SIZES, icons, images, dummyData } from "../constants";
 
 const Home = ({ navigation }) => {
   function renderHeader() {
@@ -46,7 +46,13 @@ const Home = ({ navigation }) => {
             What you want to cook today?
           </Text>
         </View>
-        <TouchableOpacity onPress={() => console.log("Profile")}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Profile", {
+              myUserId: "6492620f3379bee002a3345b",
+            })
+          }
+        >
           <Image
             source={images.profile}
             style={{
@@ -171,9 +177,9 @@ const Home = ({ navigation }) => {
           keyExtractor={(item) => `${item.id}`}
           renderItem={({ item, index }) => {
             return (
-              <TrendingCard
+              <CategoryCard
                 key={index}
-                recipeItem={item}
+                data={item}
                 containerStyle={{
                   marginLeft: index === 0 ? SIZES.padding : 0,
                 }}
@@ -242,6 +248,7 @@ const Home = ({ navigation }) => {
         renderItem={({ item }) => {
           return (
             <CategoryCard
+              data={item}
               categoryItem={item}
               containerStyle={{
                 marginHorizontal: SIZES.padding,
