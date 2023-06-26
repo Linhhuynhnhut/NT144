@@ -1,12 +1,6 @@
 // import { BlurView } from "expo-blur";
 import React from "react";
-import {
-  View,
-  ImageBackground,
-  Text,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { COLORS, FONTS, icons, SIZES } from "../constants";
 const RecipeCardInfo = ({ item }) => {
   return (
@@ -59,6 +53,7 @@ const RecipeCardInfo = ({ item }) => {
 };
 
 const TrendingCard = ({ data, onPress }) => {
+  console.log("data>>>>", data);
   return (
     <TouchableOpacity
       activeOpacity={0.2}

@@ -13,11 +13,11 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import COLORS from "../consts/colors";
 import LinearGradient from "react-native-linear-gradient";
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({ navigation, route }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const buttonsTaskbar = [
@@ -43,7 +43,7 @@ const ProfileScreen = ({ navigation }) => {
   useEffect(() => {
     const getData = async () => {
       const allUsers = await api.getAllUsers();
-      const user = await api.getUser("6492620f3379bee002a3345b");
+      const user = await api.getUser(route.params.myUserId);
       const follow = await api.getAllFollows();
       const posts = await api.getAllPosts(); // có _id
       const allReactions = await api.getAllReactions(); // có user, post
@@ -190,21 +190,19 @@ const ProfileScreen = ({ navigation }) => {
           style={styles.buttonRight}
           onPress={() => navigation.navigate("Home", {})}
         >
-          <Image
+          <TouchableOpacity
             style={{
-              width: 60,
-              height: 45,
-              opacity: 0.8,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 5,
-                height: 5,
-              },
-              shadowOpacity: 0.8,
-              shadowRadius: 4,
+              height: 40,
+              width: 40,
+              borderWidth: 2,
+              borderRadius: 10,
+              alignItems: "center",
+              justifyContent: "center",
             }}
-            source={require("../../assets/image/more.png")}
-          />
+            onPress={() => navigation.navigate("Post", {})}
+          >
+            <MaterialIcons name="add" size={30} color="black" />
+          </TouchableOpacity>
         </Pressable>
       </View>
       <View stickyHeaderIndices={[3]} style={{ elevation: 5 }}>
@@ -310,13 +308,16 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={{ fontSize: 12, color: "grey" }}>Following</Text>
               </View>
             </View>
-          
+
             <View style={{ height: 10 }}></View>
-              <View style= {{flexDirection: "row",alignItems: "center",justifyContent: "center",}}>
-              <TouchableOpacity style={{height: 60, width: 60, borderWidth:2, borderRadius:10,alignItems: "center",justifyContent: "center",}}  onPress={() => navigation.navigate("Post", {})}>
-                <MaterialIcons name="add" size={50} color="black"/>
-              </TouchableOpacity>
-              </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 6,
+              }}
+            ></View>
           </View>
         </View>
         <View
@@ -331,7 +332,7 @@ const ProfileScreen = ({ navigation }) => {
               justifyContent: "space-around",
               backgroundColor: "#F5EFE6",
               height: 45,
-              // marginTop: -1,
+              marginTop: 40,
             }}
           >
             {buttonsTaskbar.map((button) => (
