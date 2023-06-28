@@ -32,15 +32,17 @@ const Home = ({ navigation }) => {
             style={{
               color: COLORS.darkGreen,
               ...FONTS.h2,
+              fontWeight: 'bold',
             }}
           >
-            Hello Techieegy's
+            Hello Chef's
           </Text>
           <Text
             style={{
               marginTop: 3,
-              color: COLORS.gray,
+              color: COLORS.black,
               ...FONTS.body3,
+              fontWeight: 'bold',
             }}
           >
             What you want to cook today?
@@ -166,6 +168,7 @@ const Home = ({ navigation }) => {
           style={{
             marginHorizontal: SIZES.padding,
             ...FONTS.h2,
+            fontWeight: 'bold',
           }}
         >
           Trending Recipe
@@ -206,6 +209,7 @@ const Home = ({ navigation }) => {
           style={{
             flex: 1,
             ...FONTS.h2,
+            fontWeight: 'bold',
           }}
         >
           Categories
@@ -213,7 +217,7 @@ const Home = ({ navigation }) => {
         <TouchableOpacity>
           <Text
             style={{
-              color: COLORS.gray,
+              color: COLORS.darkGreen,
               ...FONTS.body4,
             }}
           >
@@ -228,7 +232,7 @@ const Home = ({ navigation }) => {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.orange,
       }}
     >
       <FlatList
