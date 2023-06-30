@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNbcrypt from 'react-native-bcrypt';
+import Spinner from 'react-native-loading-spinner-overlay';
 //import { setRandomFallback } from 'react-native-get-random-values';
 
 import { api } from "../api/api";
@@ -17,7 +18,7 @@ const RegisterScreen = ({ navigation, route }) => {
   //   callback(randomBytes);
   // });
   
-  //const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
     // check fields
@@ -30,6 +31,7 @@ const RegisterScreen = ({ navigation, route }) => {
       alert("Passwords do not match");
       return;
     }
+    setLoading(true);
     try {
       //Sử dụng bcrypt để mã hóa mật khẩu
       RNbcrypt.hash(password, 10, async (error, hashedPassword) => {
@@ -57,13 +59,16 @@ const RegisterScreen = ({ navigation, route }) => {
           await AsyncStorage.setItem('userToken', mail); 
         } catch (error) {
           console.error('Error when saving user session:', error);
+          setLoading(false);
         }
         console.log({user});
+        setLoading(false);
         navigation.navigate('Home',{user});
       }
     });
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
@@ -73,6 +78,14 @@ const RegisterScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+      <Spinner
+          //visibility of Overlay Loading Spinner
+          visible={loading}
+          //Text with the Spinner
+          textContent={'Loading...'}
+          //Text style of the Spinner Text
+          textStyle={styles.spinnerTextStyle}
+        />
       <Text style={styles.title}>Register</Text>
       <TextInput
         style={styles.input}
@@ -187,6 +200,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
   },
 });
 

@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNbcrypt from "react-native-bcrypt";
+import Spinner from 'react-native-loading-spinner-overlay';
 import { api } from "../api/api";
 
 const LoginScreen = ({ navigation, route }) => {
   const [mail, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     // Handle login logic here
@@ -14,6 +17,8 @@ const LoginScreen = ({ navigation, route }) => {
       alert("Please fill in all fields");
       return;
     }
+
+    setLoading(true);
 
     try {
       // Lấy thông tin tất cả người dùng từ server
@@ -34,6 +39,7 @@ const LoginScreen = ({ navigation, route }) => {
         RNbcrypt.compare(password, user.password, async (error, isMatch) => {
           if (error) {
             console.error(error);
+            setLoading(false);
             return;
           }
 
@@ -42,18 +48,22 @@ const LoginScreen = ({ navigation, route }) => {
               await AsyncStorage.setItem("userToken", mail);
             } catch (error) {
               console.error("Error when saving user session:", error);
+              setLoading(false);
             }
-
+            setLoading(false);
             navigation.navigate("Home");
           } else {
+            setLoading(false);
             alert("Invalid email or password");
           }
         });
       } else {
+        setLoading(false);
         alert("Invalid email or password");
       }
     } catch (error) {
       //handle error
+      setLoading(false);
       alert("An error occurred. Please try again.");
       console.error(error);
     }
@@ -66,6 +76,14 @@ const LoginScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+      <Spinner
+          //visibility of Overlay Loading Spinner
+          visible={loading}
+          //Text with the Spinner
+          textContent={'Loading...'}
+          //Text style of the Spinner Text
+          textStyle={styles.spinnerTextStyle}
+        />
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
