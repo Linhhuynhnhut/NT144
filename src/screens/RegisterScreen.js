@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNbcrypt from 'react-native-bcrypt';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -86,6 +86,7 @@ const RegisterScreen = ({ navigation, route }) => {
           //Text style of the Spinner Text
           textStyle={styles.spinnerTextStyle}
         />
+      <Image source={require("../../assets/image/food1.png")} style={styles.image} />
       <Text style={styles.title}>Register</Text>
       <TextInput
         style={styles.input}
@@ -142,6 +143,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#f2ba35',
+  },
+  image: {
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,

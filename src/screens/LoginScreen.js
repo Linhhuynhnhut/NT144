@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+import { View, Text, TextInput, Pressable, StyleSheet, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNbcrypt from "react-native-bcrypt";
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -80,10 +80,11 @@ const LoginScreen = ({ navigation, route }) => {
           //visibility of Overlay Loading Spinner
           visible={loading}
           //Text with the Spinner
-          textContent={'Loading...'}
+          textContent={'Please wait...'}
           //Text style of the Spinner Text
           textStyle={styles.spinnerTextStyle}
         />
+      <Image source={require("../../assets/image/food0.png")} style={styles.image} />
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
@@ -177,6 +178,12 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: "contain",
+    marginBottom: 32,
   },
 });
 
