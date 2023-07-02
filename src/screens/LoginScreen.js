@@ -50,8 +50,12 @@ const LoginScreen = ({ navigation, route }) => {
               console.error("Error when saving user session:", error);
               setLoading(false);
             }
+
             setLoading(false);
-            navigation.navigate("Home");
+            navigation.navigate("Home", {
+              myUserId: user._id,
+            });
+
           } else {
             setLoading(false);
             alert("Invalid email or password");
