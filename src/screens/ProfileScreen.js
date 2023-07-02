@@ -44,6 +44,7 @@ const ProfileScreen = ({ navigation, route }) => {
       const allUsers = await api.getAllUsers();
       const user = await api.getUser(route.params.myUserId);
       const follow = await api.getAllFollows();
+      const allTags = await api.getAllTags();
       const posts = await api.getAllPosts(); // có _id
       const allReactions = await api.getAllReactions(); // có user, post
 
@@ -54,7 +55,18 @@ const ProfileScreen = ({ navigation, route }) => {
       };
       const myPosts = posts.filter((item) => item.user === user?._id) || [];
       const findItem = avts.find((item) => item?.image?.uri === user?.avatar);
+      const allPostsWithTagName = myPosts.map((post) => {
+        const thisPostTags = post?.tags;
+        const tagsInThisPost = allTags.filter((tag) => {
+          return thisPostTags.includes(tag._id);
+        });
 
+        return {
+          ...post,
+          tags: tagsInThisPost,
+        };
+      });
+      console.log("allPostWithTagName>>>", allPostsWithTagName[0].tags);
       const postLikedIds = allReactions
         .filter((item) => item.user === user?._id)
         .map((r) => r?.post);
@@ -78,7 +90,7 @@ const ProfileScreen = ({ navigation, route }) => {
       setUser(user);
       setAvt(findItem?.id || 0);
       setIsPressedAvt(findItem?.id);
-      setPosts(myPosts);
+      setPosts(allPostsWithTagName);
       setPostsLiked(postLiked);
     };
 
@@ -178,7 +190,11 @@ const ProfileScreen = ({ navigation, route }) => {
       <View style={styles.header}>
         <Pressable
           style={styles.buttonLeft}
-          onPress={() => navigation.navigate("Home", { route })}
+          onPress={() =>
+            navigation.navigate("Home", {
+              myUserId: user._id,
+            })
+          }
         >
           <Image
             style={{ width: 40, height: 30, opacity: 0.8 }}
@@ -186,10 +202,7 @@ const ProfileScreen = ({ navigation, route }) => {
           />
         </Pressable>
         <Text style={styles.title}>Profile</Text>
-        <Pressable
-          style={styles.buttonRight}
-          onPress={() => navigation.navigate("Home", {})}
-        >
+        <Pressable style={styles.buttonRight}>
           <TouchableOpacity
             style={{
               height: 40,
@@ -199,7 +212,11 @@ const ProfileScreen = ({ navigation, route }) => {
               alignItems: "center",
               justifyContent: "center",
             }}
-            onPress={() => navigation.navigate("Post", {})}
+            onPress={() =>
+              navigation.navigate("Post", {
+                myUserId: user._id,
+              })
+            }
           >
             <MaterialIcons name="add" size={30} color="black" />
           </TouchableOpacity>

@@ -26,18 +26,19 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { api } from "../api/api";
 import COLORS from "../consts/colors";
-const PostScreen = ({ navigation }) => {
+const PostScreen = ({ navigation, route }) => {
+  const host = route.params.myUserId;
   const [textInputs1, setTextInputs1] = useState([]);
   const [textInputs2, setTextInputs2] = useState([]);
-  const [combinedText1, setCombinedText1] = useState('');
-  const [combinedText2, setCombinedText2] = useState('');
+  const [combinedText1, setCombinedText1] = useState("");
+  const [combinedText2, setCombinedText2] = useState("");
   const [showCombinedText, setShowCombinedText] = useState(false);
-  const [namePost, setNamePost] = useState('');
-  const [CookingTime, setCookingTime] = useState('');
-  const [Ration, setRation] = useState('');
-  const [Describe, setDescribe] = useState('');
-  const [currentTime, setCurrentTime] = useState('');
-  
+  const [namePost, setNamePost] = useState("");
+  const [CookingTime, setCookingTime] = useState("");
+  const [Ration, setRation] = useState("");
+  const [Describe, setDescribe] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
+
   const handleAddInput1 = () => {
     setTextInputs1([...textInputs1, { id: textInputs1.length }]);
   };
@@ -57,12 +58,16 @@ const PostScreen = ({ navigation }) => {
   };
 
   const handleCombineText1 = () => {
-    const combinedText = textInputs1.map((input, index) => `Nguyên liệu ${index + 1}: ${input.text}`).join('\n')
+    const combinedText = textInputs1
+      .map((input, index) => `Nguyên liệu ${index + 1}: ${input.text}`)
+      .join("\n");
     setCombinedText1(combinedText);
   };
 
   const handleCombineText2 = () => {
-    const combinedText = textInputs2.map((input, index) => `Bước ${index + 1}: ${input.text}`).join('\n');
+    const combinedText = textInputs2
+      .map((input, index) => `Bước ${index + 1}: ${input.text}`)
+      .join("\n");
     setCombinedText2(combinedText);
   };
   const content = `
@@ -95,7 +100,7 @@ const PostScreen = ({ navigation }) => {
     //   content: content,
     //   title: title,
     //   date: date,
-    //   user: "64985b74c37ec89581785f47"
+    //   user: host
     // };
     // console.log(payload);
     // let Posted;
@@ -111,26 +116,36 @@ const PostScreen = ({ navigation }) => {
 
   const renderTextInputs = (viewIndex, inputs) => {
     return inputs.map((input, index) => (
-      <View key={input.id} style={{ flexDirection: 'row' }}>
+      <View key={input.id} style={{ flexDirection: "row" }}>
         <TextInput
+          placeholder="Nhập tên món ăn...."
+          placeholderTextColor={rgba(0, 0, 0, 0.2)} // Màu đen với độ mờ 50%
           style={{
             flex: 1,
             borderWidth: 2,
             borderRadius: 10,
             fontSize: 18,
-            fontWeight: 'bold',
+            fontWeight: "bold",
             marginLeft: 20,
             padding: 10,
             marginTop: 10,
-            backgroundColor: '#FFFFFF',
-            color: '#000000',
-            placeholder: 'Nhập tên món ăn....',
-            placeholderTextColor: 'rgba(0, 0, 0, 0.5)', // Màu đen với độ mờ 50%
+            backgroundColor: "#FFFFFF",
+            color: "#000000",
           }}
-          onChangeText={(text) => handleTextInputChange(viewIndex, input.id, text)}
+          onChangeText={(text) =>
+            handleTextInputChange(viewIndex, input.id, text)
+          }
         />
-        <TouchableOpacity onPress={() => handleDeleteInput(viewIndex, input.id)}>
-          <AntDesign name="delete" size={25} color="black" marginLeft={10} marginTop={20} />
+        <TouchableOpacity
+          onPress={() => handleDeleteInput(viewIndex, input.id)}
+        >
+          <AntDesign
+            name="delete"
+            size={25}
+            color="black"
+            marginLeft={10}
+            marginTop={20}
+          />
         </TouchableOpacity>
       </View>
     ));
@@ -205,12 +220,14 @@ const PostScreen = ({ navigation }) => {
   };
   return (
     <View>
-      <View style={{height:25, backgroundColor: COLORS.mainColorProfile}}></View>
+      <View
+        style={{ height: 25, backgroundColor: COLORS.mainColorProfile }}
+      ></View>
       <View style={styles.hander}>
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("Profile", {
-              myUserId: "6492620f3379bee002a3345b",
+              myUserId: host,
             })
           }
         >
@@ -229,7 +246,7 @@ const PostScreen = ({ navigation }) => {
           <Text style={{ fontSize: 18, fontWeight: 600 }}> Post</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView style={{backgroundColor :"#faeccd"}}>
+      <ScrollView style={{ backgroundColor: "#faeccd" }}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <TouchableOpacity
             style={{
@@ -256,12 +273,12 @@ const PostScreen = ({ navigation }) => {
               fontWeight: "bold",
               marginTop: 20,
               padding: 20,
-              backgroundColor: "#FFFFFF"
+              backgroundColor: "#FFFFFF",
             }}
             placeholder="Nhập tên món ăn...."
             placeholderTextColor="#464646"
             value={namePost}
-        onChangeText={(text) => setNamePost(text)}
+            onChangeText={(text) => setNamePost(text)}
           ></TextInput>
 
           <View style={{ flexDirection: "row", marginTop: 20 }}>
@@ -296,7 +313,7 @@ const PostScreen = ({ navigation }) => {
                 marginLeft: "6%",
                 padding: 10,
                 fontSize: 17,
-                backgroundColor: "#FFFFFF"
+                backgroundColor: "#FFFFFF",
               }}
               placeholder="1 tiếng 30 phút"
               placeholderTextColor="#464646"
@@ -305,7 +322,7 @@ const PostScreen = ({ navigation }) => {
             ></TextInput>
           </View>
         </View>
-        <View style={{marginTop:20}}>
+        <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>
             Nguyên Liệu
           </Text>
@@ -321,7 +338,7 @@ const PostScreen = ({ navigation }) => {
               justifyContent: "space-between",
               alignItems: "center",
               marginTop: 10,
-              backgroundColor:"#F7D600",
+              backgroundColor: "#F7D600",
             }}
             onPress={handleAddInput1}
           >
@@ -331,7 +348,7 @@ const PostScreen = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={{marginTop:20}}>
+        <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>
             Cách làm
           </Text>
@@ -345,7 +362,7 @@ const PostScreen = ({ navigation }) => {
               justifyContent: "space-between",
               alignItems: "center",
               marginTop: 10,
-              backgroundColor:"#F7D600",
+              backgroundColor: "#F7D600",
             }}
             title="Show Text"
             onPress={handleAddInput2}
@@ -373,18 +390,15 @@ const PostScreen = ({ navigation }) => {
               fontWeight: "bold",
               marginTop: 5,
               padding: 20,
-              backgroundColor:"#FFFFFF",
+              backgroundColor: "#FFFFFF",
             }}
             placeholder="Nhập mô tả, cảm nghĩ ..."
             minHeight={120}
-            
             value={Describe}
             onChangeText={(text) => setDescribe(text)}
           ></TextInput>
         </View>
-        <View style={{ height: 200 }}>
-        </View>
- 
+        <View style={{ height: 200 }}></View>
       </ScrollView>
     </View>
   );
