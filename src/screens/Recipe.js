@@ -115,7 +115,7 @@ const RecipeCreatorCardInfo = ({ selectedRecipe }) => {
 const Recipe = ({ navigation, route }) => {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
-  const scrollY = useRef(new Animated.Value(0)).current;
+  // const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     let { recipe } = route.params;
@@ -139,7 +139,7 @@ const Recipe = ({ navigation, route }) => {
         }}
       >
         {/* Only viewwable at IOS */}
-        <Animated.View
+        {/* <Animated.View
           style={{
             position: "absolute",
             top: 100,
@@ -152,10 +152,10 @@ const Recipe = ({ navigation, route }) => {
               outputRange: [0, 1],
             }),
           }}
-        />
+        /> */}
         {/* Header Bar Title only for IOS*/}
 
-        <Animated.View
+        {/* <Animated.View
           style={{
             position: "absolute",
             top: 100,
@@ -197,7 +197,7 @@ const Recipe = ({ navigation, route }) => {
           >
             {selectedRecipe?.author?.name}
           </Text>
-        </Animated.View>
+        </Animated.View> */}
 
         <TouchableOpacity
           style={{
@@ -254,7 +254,7 @@ const Recipe = ({ navigation, route }) => {
           overflow: "hidden",
         }}
       >
-        <Animated.Image
+        {/* <Animated.Image
           source={selectedRecipe?.image}
           resizeMode="contain"
           style={{
@@ -275,8 +275,8 @@ const Recipe = ({ navigation, route }) => {
               },
             ],
           }}
-        />
-        <Animated.View
+        /> */}
+        {/* <Animated.View
           style={{
             position: "absolute",
             bottom: 10,
@@ -295,7 +295,7 @@ const Recipe = ({ navigation, route }) => {
           }}
         >
           <RecipeCreatorCardInfo selectedRecipe={selectedRecipe} />
-        </Animated.View>
+        </Animated.View> */}
       </View>
     );
   }
@@ -348,7 +348,7 @@ const Recipe = ({ navigation, route }) => {
         backgroundColor: COLORS.white,
       }}
     >
-      <Animated.FlatList
+      {/* <Animated.FlatList
         data={selectedRecipe?.ingredients}
         keyExtractor={(item) => `${item.id}`}
         showsVerticalScrollIndicator={false}
@@ -420,7 +420,7 @@ const Recipe = ({ navigation, route }) => {
             </View>
           </View>
         )}
-      />
+      /> */}
       {renderHeaderBar()}
     </View>
   );

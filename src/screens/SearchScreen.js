@@ -1,131 +1,258 @@
-import { height } from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
-import React, { useState , useEffect,useRef } from 'react';
-import { TextInput,Animated,Dimensions,View, Text, FlatList, Image, ActivityIndicator,StyleSheet,TouchableOpacity,Pressable , ScrollView} from 'react-native';
-import { FontAwesome } from 'react-native-vector-icons';
-const SearchScreen = () => {
-  const [isPressed, setIsPressed] = useState(false); 
+import React, { useState, useEffect, useRef } from "react";
+import {
+  TextInput,
+  Animated,
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
+import COLORS from "../consts/colors";
+import avts from "../data/Avatar";
+import { api } from "../api/api"; // import api
+import TaskBar from "../components/TaskBar";
+import { LinearGradient } from "expo-linear-gradient";
+import { icons } from "../constants";
+const SearchScreen = ({ navigation, route }) => {
+  // console.log(route.params.myUserId);
+  const [text, setText] = useState("");
+  const [allUsers, setAllUsers] = useState([]);
+  const [allPosts, setAllPosts] = useState([]);
+  const [allTags, setAllTags] = useState([]);
   // taskbar
   const [currentButton, setCurrentButton] = useState(0);
   const [buttonWidth, setButtonWidth] = useState(0);
   const [translateValue, setTranslateValue] = useState(new Animated.Value(0));
   const translateXRef = useRef(null);
   const [selectedButtons, setSelectedButtons] = useState([]);
-   const selectButton = (index) => {
+  const [postsSearched, setPostsSearched] = useState([]);
+  const selectButton = (index) => {
     setCurrentButton(index);
     const newSelectedButtons = new Array(3).fill(false);
     newSelectedButtons[index] = true;
     setSelectedButtons(newSelectedButtons);
     Animated.timing(translateValue, {
-      toValue: ((index) * (buttonWidth + 20)),
+      toValue: index * (buttonWidth + 20),
       duration: 150,
       useNativeDriver: true,
     }).start();
-  }
+  };
   const onButtonLayout = (event) => {
     const width = event.nativeEvent.layout.width;
     setButtonWidth(width);
-  }
+  };
+
+  useEffect(() => {
+    const getData = async () => {
+      const allComments = await api.getAllComments();
+      const allUsers = await api.getAllUsers();
+      const allReactions = await api.getAllReactions();
+      const allTags = await api.getAllTags();
+      const allPosts = await api.getAllPosts();
+
+      const postWithTagName = allPosts.map((post) => {
+        const thisPostTags = post?.tags;
+        const tagsInThisPost = allTags.filter((tag) => {
+          return thisPostTags.includes(tag._id);
+        });
+
+        return {
+          ...post,
+          tags: tagsInThisPost,
+        };
+      });
+
+      setAllUsers(allUsers);
+      setAllPosts(postWithTagName);
+      setAllTags(allTags);
+      setSelectedButtons([true, false, false]);
+    };
+
+    getData();
+  }, [postsSearched.length]);
 
   return (
-    <View style={{ flex: 1, padding: 20}}>
-      <View style={{ height: 60 , borderWidth:3, flexDirection:"row", alignItems: 'center',marginTop:20, borderRadius: 30, borderColor:"#f27e35"}}>
-       <FontAwesome name="search" size={30} color="black" marginLeft={10}/>
-      <TextInput
-        style={{ height: 60, borderColor: 'gray', paddingHorizontal: 10 , width:"60%", fontSize: 20}}
-      />
+    <View style={{ flex: 1 }}>
+      <View style={styles.header}>
+        <Pressable
+          style={styles.buttonLeft}
+          onPress={() => navigation.navigate("Home", {})}
+        >
+          <Image
+            style={{ width: 40, height: 30, opacity: 0.8 }}
+            source={require("../../assets/image/back.png")}
+          />
+        </Pressable>
+        <Text style={styles.title}>Search</Text>
       </View>
-      <TaskBarcomponent 
-            currentButton ={currentButton}
-            setCurrentButton ={setCurrentButton}
+
+      <View style={{ flex: 9 }}>
+        <LinearGradient
+          colors={["rgb(254,182,36)", "transparent"]}
+          style={{
+            left: 0,
+            right: 0,
+            flex: 1,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#FFF",
+              paddingVertical: 8,
+              paddingHorizontal: 20,
+              marginHorizontal: 20,
+              borderRadius: 15,
+              // marginTop: 25,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <TextInput
+              placeholder="Bạn muốn tìm kiếm gì? "
+              placeholderTextColor="#FEB624"
+              style={{
+                fontWeight: "bold",
+                fontSize: 18,
+                width: "100%",
+                color: "#FEB624",
+              }}
+              onChangeText={(text) => {
+                setText(text);
+              }}
+              value={text}
+            />
+            <TouchableOpacity
+              style={{
+                width: 20,
+                height: "100%",
+                tintColor: COLORS.gray,
+                // position: "absolute",
+                right: 10,
+                top: 5,
+                // backgroundColor: "#000",
+              }}
+              onPress={async () => {
+                const postsHaveKeyWords = allPosts.filter((post) => {
+                  const keyWordArr = text.split(" ");
+                  const tagArr = post?.tags;
+                  let found = false;
+                  //1. Lặp qua tất cả keyword
+                  keyWordArr.forEach((keyword) => {
+                    //2. Duyệt có tag nào khớp keyword đang lặp hay không
+                    if (
+                      tagArr.find(
+                        (tag) =>
+                          tag?.nameTag?.toLowerCase() === keyword?.toLowerCase()
+                      )
+                    ) {
+                      //3. Nếu có set giá trị found  = true
+                      found = true;
+                    }
+                  });
+
+                  return found;
+                });
+
+                // console.log(
+                //   "postsHaveKeyWords[0].tags>>>",
+                //   postsHaveKeyWords[0].tags
+                // );
+
+                // const postLiked = posts.filter((item) => {
+                //   return postLikedIds.includes(item._id);
+                // });
+                const postsWithInfoUser = postsHaveKeyWords.map((post) => {
+                  let postId = post.user;
+                  const thisUser = allUsers.find(
+                    (item) => item?._id === postId
+                  );
+                  const findItem = avts.find(
+                    (item) => item?.image?.uri === thisUser?.avatar
+                  );
+                  return {
+                    ...post,
+                    userInfo: {
+                      avatarID: findItem?.id || 0,
+                      avatar: thisUser?.avatar,
+                      nameUser: thisUser?.nameUser,
+                    },
+                  };
+                });
+                setPostsSearched(postsWithInfoUser);
+                // console.log(
+                //   "postsWithInfoUser[0].tags>>>",
+                //   postsWithInfoUser[0].tags
+                // );
+
+                // console.log("allPost>>>>>", allPosts);
+              }}
+            >
+              <Image
+                source={icons.search}
+                style={{
+                  width: 20,
+                  height: 20,
+                  tintColor: COLORS.gray,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+        <LinearGradient
+          colors={["transparent", "rgba(254,182,36,0.2)"]}
+          style={{
+            left: 0,
+            right: 0,
+            flex: 9,
+          }}
+        >
+          <TaskBar
+            currentButton={currentButton}
+            setCurrentButton={setCurrentButton}
             buttonWidth={buttonWidth}
             setButtonWidth={setButtonWidth}
-            translateValue ={translateValue }
+            translateValue={translateValue}
             setTranslateValue={setTranslateValue}
             translateXRef={translateXRef}
             selectedButtons={selectedButtons}
-            setSelectedButtons={setSelectedButtons}
             selectButton={selectButton}
             onButtonLayout={onButtonLayout}
-       />
+            setPostsSearched={setPostsSearched}
+            data={postsSearched}
+            host={route.params.myUserId}
+          />
+        </LinearGradient>
+      </View>
     </View>
   );
 };
+
+export default SearchScreen;
 const styles = StyleSheet.create({
-  button: {
+  header: {
     flex: 1,
-    alignItems: 'center',
-    paddingVertical: 10,
+    backgroundColor: COLORS.mainColorProfile,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    justifyContent: "center",
   },
-  taskBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 50,
-    backgroundColor: '#f5f5f5',
-    borderBottomWidth: 2,
-    borderBottomColor: '#d9d9d9',
-    paddingHorizontal: 20,
+  buttonLeft: {
+    position: "absolute",
+    height: 40,
+    backgroundColor: COLORS.mainColorProfile,
+    width: 60,
+    justifyContent: "center",
+    left: 10,
+    bottom: 5,
   },
-  lineContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: 3,
-  },
-  line: {
-    height: 3,
-    backgroundColor: "#f27e35",    
+  title: {
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: 900,
+    color: "#fff",
+    marginTop: 20,
   },
 });
-const TaskBarcomponent=({currentButton,setCurrentButton,buttonWidth,setButtonWidth,translateValue ,setTranslateValue, translateXRef,selectedButtons,setSelectedButtons,selectButton,onButtonLayout})=>{
-  return(
-    <View>
-      <View style={styles.taskBar}>
-         <TouchableOpacity style={[styles.button, selectedButtons[0] ? styles.activeButton : null]}
-           onLayout={onButtonLayout}
-           onPress={() => selectButton(0)}
-           >
-         <Text style={[styles.text, { fontWeight: selectedButtons[0] ? 'bold' : 'normal', fontSize: selectedButtons[0] ? 18 : 16 }]} >All</Text>
-         </TouchableOpacity>
-
-         <TouchableOpacity
-           style={[styles.button, selectedButtons[1] ? styles.activeButton : null]}
-           onLayout={onButtonLayout}
-          onPress={() => selectButton(1)}
-         >
-         <Text style={[styles.text, { fontWeight: selectedButtons[1] ? 'bold' : 'normal', fontSize: selectedButtons[1] ? 18 : 16 }]} >Post</Text>
-        </TouchableOpacity>
-
-    <TouchableOpacity
-      style={[styles.button, selectedButtons[2] ? styles.activeButton : null]}
-      onLayout={onButtonLayout}
-      onPress={() => selectButton(2)}
-    >
-      <Text style={[styles.text, { fontWeight: selectedButtons[2] ? 'bold' : 'normal', fontSize: selectedButtons[2] ? 18 : 16 }]} >User</Text>
-    </TouchableOpacity>
-    
-    <View style={styles.lineContainer}>
-      <Animated.View
-        ref={translateXRef}
-        style={[
-          styles.line, 
-          { 
-            width: buttonWidth,
-            transform: [{ translateX: translateValue }]
-          }
-        ]}
-      />
-    </View>
-    <View>
-    {selectButton === 0 && <View style={{ backgroundColor: "red", width: 100, height: 100 }} />}
-    {selectButton === 1 && <View style={{ backgroundColor: "blue", width: 100, height: 100 }} />}
-    {selectButton === 2 && <View style={{ backgroundColor: "yellow", width: 100, height: 100 }} />}
-    </View>
-  </View>
-  <View>
-    <Text>xin chàoádasdasdas</Text>
-  </View>
-    </View>
-  );
-}
-export default SearchScreen;
