@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,11 +8,30 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
+
+import { api } from "../api/api";
+
 import { CategoryCard, TrendingCard } from "../components";
 
 import { FONTS, COLORS, SIZES, icons, images, dummyData } from "../constants";
 
 const Home = ({ navigation }) => {
+
+  const [state, setState] = useState({
+    allPosts: [],
+    tredingRecipe: {}
+  })
+
+  useEffect( async () => {
+    const result = await api.getAllPosts()
+    if (result) {
+      let tredingRecipe = result.reduce(function(item1, item2) {
+        return item1?.reactionCount > item2?.reactionCount ? item1 : item2;
+      });
+      setState(prev => ({...prev, allPosts: result, tredingRecipe: tredingRecipe}))
+    }
+  },[])
+
   function renderHeader() {
     return (
       <View
@@ -173,23 +192,10 @@ const Home = ({ navigation }) => {
         >
           Trending Recipe
         </Text>
-        <FlatList
-          data={dummyData.trendingRecipes}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => `${item.id}`}
-          renderItem={({ item, index }) => {
-            return (
-              <CategoryCard
-                key={index}
-                data={item}
-                containerStyle={{
-                  marginLeft: index === 0 ? SIZES.padding : 0,
-                }}
-                onPress={() => navigation.navigate("Recipe", { recipe: item })}
-              />
-            );
-          }}
+        <CategoryCard
+          key={state.tredingRecipe?._id}
+          data={state.tredingRecipe}
+          onPress={() => navigation.navigate("Recipe", { recipe: state.tredingRecipe })}
         />
       </View>
     );
