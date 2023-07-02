@@ -15,24 +15,26 @@ import { api } from "../api/api";
 import { CategoryCard, TrendingCard } from "../components";
 
 import { FONTS, COLORS, SIZES, icons, images, dummyData } from "../constants";
-import { useState } from "react";
 
-const Home = ({ navigation }) => {
-
+const Home = ({ navigation, route }) => {
   const [state, setState] = useState({
     allPosts: [],
-    tredingRecipe: {}
-  })
+    tredingRecipe: {},
+  });
 
-  useEffect( async () => {
-    const result = await api.getAllPosts()
+  useEffect(async () => {
+    const result = await api.getAllPosts();
     if (result) {
-      let tredingRecipe = result.reduce(function(item1, item2) {
+      let tredingRecipe = result.reduce(function (item1, item2) {
         return item1?.reactionCount > item2?.reactionCount ? item1 : item2;
       });
-      setState(prev => ({...prev, allPosts: result, tredingRecipe: tredingRecipe}))
+      setState((prev) => ({
+        ...prev,
+        allPosts: result,
+        tredingRecipe: tredingRecipe,
+      }));
     }
-  },[])
+  }, []);
 
   const [myUserId, setMyUserId] = useState(route.params.myUserId);
   function renderHeader() {
@@ -54,7 +56,7 @@ const Home = ({ navigation }) => {
             style={{
               color: COLORS.darkGreen,
               ...FONTS.h2,
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}
           >
             Hello Chef's
@@ -64,7 +66,7 @@ const Home = ({ navigation }) => {
               marginTop: 3,
               color: COLORS.black,
               ...FONTS.body3,
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}
           >
             What you want to cook today?
@@ -201,7 +203,7 @@ const Home = ({ navigation }) => {
           style={{
             marginHorizontal: SIZES.padding,
             ...FONTS.h2,
-            fontWeight: 'bold',
+            fontWeight: "bold",
           }}
         >
           Trending Recipe
@@ -209,8 +211,9 @@ const Home = ({ navigation }) => {
         <CategoryCard
           key={state.tredingRecipe?._id}
           data={state.tredingRecipe}
-          onPress={() => navigation.navigate("Recipe", { recipe: state.tredingRecipe })}
-
+          onPress={() =>
+            navigation.navigate("Recipe", { recipe: state.tredingRecipe })
+          }
         />
       </View>
     );
@@ -230,7 +233,7 @@ const Home = ({ navigation }) => {
           style={{
             flex: 1,
             ...FONTS.h2,
-            fontWeight: 'bold',
+            fontWeight: "bold",
           }}
         >
           Categories
