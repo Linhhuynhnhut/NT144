@@ -24,10 +24,20 @@ import {
   AntDesign,
 } from "react-native-vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { api } from "../api/api";
+import COLORS from "../consts/colors";
 const PostScreen = ({ navigation }) => {
   const [textInputs1, setTextInputs1] = useState([]);
   const [textInputs2, setTextInputs2] = useState([]);
-
+  const [combinedText1, setCombinedText1] = useState('');
+  const [combinedText2, setCombinedText2] = useState('');
+  const [showCombinedText, setShowCombinedText] = useState(false);
+  const [namePost, setNamePost] = useState('');
+  const [CookingTime, setCookingTime] = useState('');
+  const [Ration, setRation] = useState('');
+  const [Describe, setDescribe] = useState('');
+  const [currentTime, setCurrentTime] = useState('');
+  
   const handleAddInput1 = () => {
     setTextInputs1([...textInputs1, { id: textInputs1.length }]);
   };
@@ -35,6 +45,7 @@ const PostScreen = ({ navigation }) => {
   const handleAddInput2 = () => {
     setTextInputs2([...textInputs2, { id: textInputs2.length }]);
   };
+
   const handleDeleteInput = (viewIndex, inputId) => {
     if (viewIndex === 1) {
       const updatedInputs = textInputs1.filter((input) => input.id !== inputId);
@@ -45,35 +56,104 @@ const PostScreen = ({ navigation }) => {
     }
   };
 
+  const handleCombineText1 = () => {
+    const combinedText = textInputs1.map((input, index) => `Nguyên liệu ${index + 1}: ${input.text}`).join('\n')
+    setCombinedText1(combinedText);
+  };
+
+  const handleCombineText2 = () => {
+    const combinedText = textInputs2.map((input, index) => `Bước ${index + 1}: ${input.text}`).join('\n');
+    setCombinedText2(combinedText);
+  };
+  const content = `
+  Mô tả: ${Describe}
+  Thời gian nấu: ${CookingTime}
+  Khẩu phần ăn: ${Ration}
+  Nguyên Liệu: 
+  ${combinedText1}
+  Cách làm:
+  ${combinedText2}
+`;
+  const title = `${namePost}`;
+  //btn Post
+  const handleShowCombinedText = async () => {
+    await handleCombineText1();
+    await handleCombineText2();
+    setShowCombinedText(true);
+    setNamePost(namePost);
+    setCookingTime(CookingTime);
+    setRation(Ration);
+    setDescribe(Describe);
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    const date = `${hours}:${minutes}:${seconds}`;
+    setCurrentTime(date);
+
+    // const payload = {
+    //   content: content,
+    //   title: title,
+    //   date: date,
+    //   user: "64985b74c37ec89581785f47"
+    // };
+    // console.log(payload);
+    // let Posted;
+    // try{
+    //   Posted = await api.addPost(payload);
+    //   console.log('Post added successfully:', response.data);
+    // }
+    // catch(error) {
+    //     console.error('Error adding post:', error);
+    //     // Xử lý lỗi
+    //   };
+  };
+
   const renderTextInputs = (viewIndex, inputs) => {
-    return inputs.map((input) => (
-      <View key={input.id} style={{ flexDirection: "row" }}>
+    return inputs.map((input, index) => (
+      <View key={input.id} style={{ flexDirection: 'row' }}>
         <TextInput
           style={{
             flex: 1,
-            borderWidth: 1,
+            borderWidth: 2,
             borderRadius: 10,
             fontSize: 18,
-            fontWeight: "bold",
+            fontWeight: 'bold',
             marginLeft: 20,
             padding: 10,
             marginTop: 10,
+            backgroundColor: '#FFFFFF',
+            color: '#000000',
+            placeholder: 'Nhập tên món ăn....',
+            placeholderTextColor: 'rgba(0, 0, 0, 0.5)', // Màu đen với độ mờ 50%
           }}
+          onChangeText={(text) => handleTextInputChange(viewIndex, input.id, text)}
         />
-        <TouchableOpacity
-          onPress={() => handleDeleteInput(viewIndex, input.id)}
-        >
-          <AntDesign
-            name="delete"
-            size={25}
-            color="black"
-            marginLeft={10}
-            marginTop={20}
-            mar
-          />
+        <TouchableOpacity onPress={() => handleDeleteInput(viewIndex, input.id)}>
+          <AntDesign name="delete" size={25} color="black" marginLeft={10} marginTop={20} />
         </TouchableOpacity>
       </View>
     ));
+  };
+
+  const handleTextInputChange = (viewIndex, inputId, text) => {
+    if (viewIndex === 1) {
+      const updatedInputs = textInputs1.map((input) => {
+        if (input.id === inputId) {
+          return { ...input, text };
+        }
+        return input;
+      });
+      setTextInputs1(updatedInputs);
+    } else if (viewIndex === 2) {
+      const updatedInputs = textInputs2.map((input) => {
+        if (input.id === inputId) {
+          return { ...input, text };
+        }
+        return input;
+      });
+      setTextInputs2(updatedInputs);
+    }
   };
   const [images, setImages] = useState([]);
 
@@ -125,6 +205,7 @@ const PostScreen = ({ navigation }) => {
   };
   return (
     <View>
+      <View style={{height:25, backgroundColor: COLORS.mainColorProfile}}></View>
       <View style={styles.hander}>
         <TouchableOpacity
           onPress={() =>
@@ -137,31 +218,18 @@ const PostScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={{
-            marginLeft: "20%",
+            marginLeft: "65%",
             borderWidth: 2,
             borderRadius: 5,
             padding: 5,
-            borderColor: "#f27e35",
+            borderColor: "black",
           }}
+          onPress={handleShowCombinedText}
         >
-          <Text style={{ fontSize: 18, fontWeight: 600 }}> Lưu </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            marginLeft: "5%",
-            borderWidth: 2,
-            borderRadius: 5,
-            padding: 5,
-            borderColor: "#f27e35",
-          }}
-        >
-          <Text style={{ fontSize: 18, fontWeight: 600 }}> Lên sóng </Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Fontisto name="more-v-a" size={30} color="black" marginLeft={20} />
+          <Text style={{ fontSize: 18, fontWeight: 600 }}> Post</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      <ScrollView style={{backgroundColor :"#faeccd"}}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <TouchableOpacity
             style={{
@@ -182,14 +250,18 @@ const PostScreen = ({ navigation }) => {
             style={{
               height: 80,
               width: "90%",
-              borderWidth: 1,
+              borderWidth: 2,
               borderRadius: 15,
               fontSize: 18,
               fontWeight: "bold",
               marginTop: 20,
               padding: 20,
+              backgroundColor: "#FFFFFF"
             }}
-            placeholder="Nhập tên món ăn"
+            placeholder="Nhập tên món ăn...."
+            placeholderTextColor="#464646"
+            value={namePost}
+        onChangeText={(text) => setNamePost(text)}
           ></TextInput>
 
           <View style={{ flexDirection: "row", marginTop: 20 }}>
@@ -198,13 +270,17 @@ const PostScreen = ({ navigation }) => {
               style={{
                 height: 40,
                 width: "50%",
-                borderWidth: 1,
+                borderWidth: 2,
                 borderRadius: 10,
                 marginLeft: "13%",
                 padding: 10,
                 fontSize: 17,
+                backgroundColor: "#FFFFFF",
               }}
               placeholder="2 người"
+              placeholderTextColor="#464646"
+              value={Ration}
+              onChangeText={(text) => setRation(text)}
             ></TextInput>
           </View>
           <View style={{ flexDirection: "row", marginTop: 20 }}>
@@ -215,20 +291,21 @@ const PostScreen = ({ navigation }) => {
               style={{
                 height: 40,
                 width: "50%",
-                borderWidth: 1,
+                borderWidth: 2,
                 borderRadius: 10,
                 marginLeft: "6%",
                 padding: 10,
                 fontSize: 17,
+                backgroundColor: "#FFFFFF"
               }}
               placeholder="1 tiếng 30 phút"
+              placeholderTextColor="#464646"
+              value={CookingTime}
+              onChangeText={(text) => setCookingTime(text)}
             ></TextInput>
           </View>
         </View>
-        <View
-          style={{ backgroundColor: "gray", height: 10, marginTop: 10 }}
-        ></View>
-        <View style={{}}>
+        <View style={{marginTop:20}}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>
             Nguyên Liệu
           </Text>
@@ -238,13 +315,13 @@ const PostScreen = ({ navigation }) => {
           <TouchableOpacity
             style={{
               marginLeft: "30%",
-              borderWidth: 1,
               borderRadius: 10,
               flexDirection: "row",
               width: "45%",
               justifyContent: "space-between",
               alignItems: "center",
               marginTop: 10,
+              backgroundColor:"#F7D600",
             }}
             onPress={handleAddInput1}
           >
@@ -254,10 +331,7 @@ const PostScreen = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View>
-          <View
-            style={{ backgroundColor: "gray", height: 10, marginTop: 10 }}
-          ></View>
+        <View style={{marginTop:20}}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>
             Cách làm
           </Text>
@@ -265,13 +339,13 @@ const PostScreen = ({ navigation }) => {
           <TouchableOpacity
             style={{
               marginLeft: "30%",
-              borderWidth: 1,
               borderRadius: 10,
               flexDirection: "row",
               width: "45%",
               justifyContent: "space-between",
               alignItems: "center",
               marginTop: 10,
+              backgroundColor:"#F7D600",
             }}
             title="Show Text"
             onPress={handleAddInput2}
@@ -299,22 +373,28 @@ const PostScreen = ({ navigation }) => {
               fontWeight: "bold",
               marginTop: 5,
               padding: 20,
+              backgroundColor:"#FFFFFF",
             }}
             placeholder="Nhập mô tả, cảm nghĩ ..."
+            minHeight={120}
+            
+            value={Describe}
+            onChangeText={(text) => setDescribe(text)}
           ></TextInput>
         </View>
-        <View style={{ height: 100 }}></View>
+        <View style={{ height: 200 }}>
+        </View>
+ 
       </ScrollView>
     </View>
   );
 };
 const styles = StyleSheet.create({
   hander: {
-    height: 65,
+    height: 45,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "white",
-    marginTop: 20,
+    backgroundColor: COLORS.mainColorProfile,
   },
   inputsContainer: {
     flexDirection: "column",
