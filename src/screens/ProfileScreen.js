@@ -15,8 +15,7 @@ import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import COLORS from "../consts/colors";
-import LinearGradient from "react-native-linear-gradient";
-
+import { LinearGradient } from "expo-linear-gradient";
 const ProfileScreen = ({ navigation, route }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -73,10 +72,11 @@ const ProfileScreen = ({ navigation, route }) => {
       //   };
       // });
 
-      //console.log("mypost>>>", myPosts);
+      // console.log("myUser>>>", user);
+
       setprofileInfo(followInfo);
       setUser(user);
-      setAvt(findItem?.id);
+      setAvt(findItem?.id || 0);
       setIsPressedAvt(findItem?.id);
       setPosts(myPosts);
       setPostsLiked(postLiked);
@@ -86,7 +86,7 @@ const ProfileScreen = ({ navigation, route }) => {
   }, []);
 
   const renderItemPost = ({ item }) => (
-    <Post post={item} avt={avt} user={user} />
+    <Post post={item} user={user} host={user} />
   );
 
   const Avatar = ({ src, index }) => (
@@ -135,7 +135,7 @@ const ProfileScreen = ({ navigation, route }) => {
               renderItem={({ item, index }) => (
                 <Avatar src={item?.image} index={index} />
               )}
-              keyExtractor={(item) => item.id}
+              // keyExtractor={(item) => item.id}
             />
             <Pressable
               style={{
@@ -178,7 +178,7 @@ const ProfileScreen = ({ navigation, route }) => {
       <View style={styles.header}>
         <Pressable
           style={styles.buttonLeft}
-          onPress={() => navigation.navigate("Home", {})}
+          onPress={() => navigation.navigate("Home", { route })}
         >
           <Image
             style={{ width: 40, height: 30, opacity: 0.8 }}
@@ -206,8 +206,10 @@ const ProfileScreen = ({ navigation, route }) => {
         </Pressable>
       </View>
       <View stickyHeaderIndices={[3]} style={{ elevation: 5 }}>
-        <View style={{ height: 11, backgroundColor: "#F5EFE6" }}></View>
-        <View style={styles.profileview}>
+        <LinearGradient
+          colors={["rgb(254,182,36)", "transparent"]}
+          style={styles.profileview}
+        >
           <Image
             style={{
               width: 100,
@@ -232,7 +234,7 @@ const ProfileScreen = ({ navigation, route }) => {
               backgroundColor={"#fff4"}
             />
           </Pressable>
-          <View style={{ padding: 0, zIndex: 4, top: 50, left: 20 }}>
+          <View style={{ padding: 0, zIndex: 4, top: 40, left: 20 }}>
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>
               {user?.nameUser}
             </Text>
@@ -250,8 +252,8 @@ const ProfileScreen = ({ navigation, route }) => {
               marginBottom: 5,
               borderTopRightRadius: 40,
               borderTopLeftRadius: 40,
-              shadowColor: "#000",
-              elevation: 25,
+              shadowColor: "blue",
+              elevation: 5,
             }}
           ></View>
           <View
@@ -265,9 +267,6 @@ const ProfileScreen = ({ navigation, route }) => {
               borderBottomLeftRadius: 40,
               paddingTop: 5,
               alignItems: "center",
-              shadowOpacity: 0.9,
-              shadowColor: "#000",
-              elevation: 25,
             }}
           >
             <View
@@ -284,7 +283,9 @@ const ProfileScreen = ({ navigation, route }) => {
                 >
                   {posts?.length}
                 </Text>
-                <Text style={{ fontSize: 12, color: "grey" }}>User Posts</Text>
+                <Text style={{ fontSize: 12, color: "#24221f" }}>
+                  User Posts
+                </Text>
               </View>
 
               <View style={{ alignItems: "center" }}>
@@ -297,7 +298,9 @@ const ProfileScreen = ({ navigation, route }) => {
                 >
                   {profileInfo?.follower.length}
                 </Text>
-                <Text style={{ fontSize: 12, color: "grey" }}>Followers</Text>
+                <Text style={{ fontSize: 12, color: "#24221f" }}>
+                  Followers
+                </Text>
               </View>
               <View style={{ alignItems: "center" }}>
                 <Text
@@ -305,7 +308,9 @@ const ProfileScreen = ({ navigation, route }) => {
                 >
                   {profileInfo?.following.length}
                 </Text>
-                <Text style={{ fontSize: 12, color: "grey" }}>Following</Text>
+                <Text style={{ fontSize: 12, color: "#24221f" }}>
+                  Following
+                </Text>
               </View>
             </View>
 
@@ -319,44 +324,35 @@ const ProfileScreen = ({ navigation, route }) => {
               }}
             ></View>
           </View>
-        </View>
-        <View
-          style={{
-            backgroundColor: "#F5EFE6",
-          }}
-        ></View>
+        </LinearGradient>
         <View>
           <View
             style={{
               flexDirection: "row",
               justifyContent: "space-around",
-              backgroundColor: "#F5EFE6",
+              backgroundColor: "transparent",
               height: 45,
-              marginTop: 40,
             }}
           >
             {buttonsTaskbar.map((button) => (
               <Pressable
                 key={button.id}
-                style={({ pressed }) => [
-                  {
-                    borderTopRightRadius: 20,
-                    borderTopLeftRadius: 20,
-                    padding: 10,
-                    shadowColor: "#000",
-                    shadowOffset: {
-                      width: activeIndex === button.id ? 5 : 0,
-                      height: activeIndex === button.id ? 5 : 0,
-                    },
-                    shadowOpacity: 0.8,
-                    shadowRadius: 10,
-                    elevation: 5,
-                    backgroundColor:
-                      activeIndex === button.id ? "#faeccd" : "#FFCA48",
-                    flex: 1, // Chiếm hết toàn bộ chiều rộng của View
+                style={{
+                  borderTopRightRadius: 20,
+                  borderTopLeftRadius: 20,
+                  padding: 10,
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: activeIndex === button.id ? 5 : 0,
+                    height: activeIndex === button.id ? 5 : 0,
                   },
-                  pressed && { opacity: 0.5 },
-                ]}
+                  shadowOpacity: 0.8,
+                  shadowRadius: 10,
+                  elevation: 5,
+                  backgroundColor:
+                    activeIndex === button.id ? "#faeccd" : "#FFCA48",
+                  flex: 1, // Chiếm hết toàn bộ chiều rộng của View
+                }}
                 onPress={() => setActiveIndex(button.id)}
               >
                 <Text
@@ -374,32 +370,27 @@ const ProfileScreen = ({ navigation, route }) => {
         <View
           style={{
             backgroundColor: "#faeccd",
-            height: "68%",
+            height: "67%",
           }}
         >
-          {activeIndex === 0 && (
+          {activeIndex === 0 ? (
             <View style={{ flex: 1 }}>
               <FlatList
                 data={posts}
                 renderItem={renderItemPost}
                 style={{ flex: 1 }}
+                // keyExtractor={(item) => item.id}
               />
             </View>
-          )}
-          {activeIndex === 1 && (
-            <View style={{ flex: 1 }}>
-              <FlatList data={postsLiked} renderItem={renderItemPost} />
-            </View>
-          )}
-          {/* {activeIndex === 2 && (
+          ) : (
             <View style={{ flex: 1 }}>
               <FlatList
-                data={followers}
-                renderItem={renderItem}
-                keyExtractor={({ id }) => id.toString()}
+                data={postsLiked}
+                renderItem={renderItemPost}
+                // keyExtractor={(item) => item.id}
               />
             </View>
-          )} */}
+          )}
         </View>
       </View>
     </>
@@ -411,6 +402,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 180,
     justifyContent: "center",
+    paddingTop: 10,
     paddingBottom: 10,
     marginBottom: 20,
     flexDirection: "row",
@@ -429,13 +421,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  title: {
-    color: COLORS.mainColorProfile,
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 32,
-    backgroundColor: COLORS.mainColorProfile,
   },
   buttonLeft: {
     alignSelf: "flex-start",

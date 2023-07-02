@@ -7,12 +7,15 @@ import {
   SafeAreaView,
   TextInput,
   FlatList,
+  Pressable,
 } from "react-native";
 import { CategoryCard, TrendingCard } from "../components";
 
 import { FONTS, COLORS, SIZES, icons, images, dummyData } from "../constants";
+import { useState } from "react";
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route }) => {
+  const [myUserId, setMyUserId] = useState(route.params.myUserId);
   function renderHeader() {
     return (
       <View
@@ -49,7 +52,7 @@ const Home = ({ navigation }) => {
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("Profile", {
-              myUserId: "6492620f3379bee002a3345b",
+              myUserId: myUserId,
             })
           }
         >
@@ -68,7 +71,12 @@ const Home = ({ navigation }) => {
 
   function renderSearchBar() {
     return (
-      <View
+      <Pressable
+        onPress={() =>
+          navigation.navigate("Search", {
+            myUserId: myUserId,
+          })
+        }
         style={{
           flexDirection: "row",
           height: 50,
@@ -87,16 +95,22 @@ const Home = ({ navigation }) => {
             tintColor: COLORS.gray,
           }}
         />
-        <TextInput
+        <View
           style={{
             marginLeft: SIZES.radius,
             ...FONTS.body3,
             flex: 1,
           }}
-          placeholder="Search Recipes"
-          placeholderTextColor={COLORS.gray}
-        />
-      </View>
+        >
+          <Text
+            style={{
+              ...FONTS.body3,
+            }}
+          >
+            Search Recipe
+          </Text>
+        </View>
+      </Pressable>
     );
   }
 
@@ -174,7 +188,7 @@ const Home = ({ navigation }) => {
           data={dummyData.trendingRecipes}
           horizontal
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => `${item.id}`}
+          // keyExtractor={(item) => `${item.id}`}
           renderItem={({ item, index }) => {
             return (
               <CategoryCard
@@ -233,7 +247,7 @@ const Home = ({ navigation }) => {
     >
       <FlatList
         data={dummyData.categories}
-        keyExtractor={(item) => item.id.toString()}
+        // keyExtractor={(item) => item.id.toString()}
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
