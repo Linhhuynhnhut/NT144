@@ -74,7 +74,7 @@ const PostScreen = ({ navigation }) => {
   Cách làm:
   ${combinedText2}
 `;
-  const title = '${namePost}';
+  const title = `${namePost}`;
   //btn Post
   const handleShowCombinedText = async () => {
     await handleCombineText1();
@@ -91,19 +91,22 @@ const PostScreen = ({ navigation }) => {
     const date = `${hours}:${minutes}:${seconds}`;
     setCurrentTime(date);
 
-    const payload = {
-      content: content,
-      title: title,
-      date: date,
-    };
-    let Posted;
-    try{
-      Posted = await api.addPost(payload);
-    }
-    catch(error) {
-        console.error('Error adding post:', error);
-        // Xử lý lỗi
-      };
+    // const payload = {
+    //   content: content,
+    //   title: title,
+    //   date: date,
+    //   user: "64985b74c37ec89581785f47"
+    // };
+    // console.log(payload);
+    // let Posted;
+    // try{
+    //   Posted = await api.addPost(payload);
+    //   console.log('Post added successfully:', response.data);
+    // }
+    // catch(error) {
+    //     console.error('Error adding post:', error);
+    //     // Xử lý lỗi
+    //   };
   };
 
   const renderTextInputs = (viewIndex, inputs) => {
@@ -379,12 +382,7 @@ const PostScreen = ({ navigation }) => {
             onChangeText={(text) => setDescribe(text)}
           ></TextInput>
         </View>
-        <View style={{ height: 400 }}>
-      {showCombinedText && (
-        <View>
-          <Text>{content}</Text>
-        </View>
-      )}
+        <View style={{ height: 200 }}>
         </View>
  
       </ScrollView>
