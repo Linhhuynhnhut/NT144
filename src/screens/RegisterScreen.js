@@ -82,7 +82,7 @@ const RegisterScreen = ({ navigation, route }) => {
           //visibility of Overlay Loading Spinner
           visible={loading}
           //Text with the Spinner
-          textContent={'Loading...'}
+          textContent={'Please wait...'}
           //Text style of the Spinner Text
           textStyle={styles.spinnerTextStyle}
         />
