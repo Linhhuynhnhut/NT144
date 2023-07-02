@@ -6,8 +6,8 @@ import {
   Image,
   FlatList,
   Modal,
-  TouchableWithoutFeedback,
   TextInput,
+  Dimensions,
 } from "react-native";
 import { api } from "../api/api"; // import api
 import React, { useState, useEffect } from "react";
@@ -17,12 +17,12 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import avts from "../data/Avatar";
 
+const windowWidth = Dimensions.get("window").width;
 const ImgPost = ({ src, index }) => (
   <Image style={styles.imgPost} source={{ uri: src }} />
 );
 
 const Cmt = ({ cmt }) => {
-  // console.log("comment in Cmt", cmt);
   return (
     <View style={styles.cmtView}>
       <Image style={styles.avatarUserCmt} source={{ uri: cmt.avatar }} />
@@ -52,7 +52,8 @@ const Cmt = ({ cmt }) => {
   );
 };
 
-const Post = ({ post, avt, user }) => {
+const Post = ({ post, user, host, tagsProp }) => {
+  const [hostApp, setHostApp] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [cmts, setCmts] = useState(null);
   const [tags, setTags] = useState(null);
@@ -68,12 +69,12 @@ const Post = ({ post, avt, user }) => {
       const allUsers = await api.getAllUsers();
       const allReactions = await api.getAllReactions();
       const allTags = await api.getAllTags();
-
+      const thisHost = await api.getUser(host);
       //2. Lọc ra các comment của bài Post, có thả tim ko, tag nào được sử dụng
       const comments = allComments.filter((item) => item.post === post?._id);
       const thisReaction =
         allReactions.find((item) => {
-          return item.post === post?._id && item.user === user._id;
+          return item.post === post?._id && item.user === hostApp?._id;
         }) || null;
       const postReaction = allReactions.filter(
         (item) => item.post === post?._id
@@ -83,7 +84,7 @@ const Post = ({ post, avt, user }) => {
       //3. Ứng với mỗi comment => lấy ra userId để kết với thông tin user
       const commentsWithInfo = comments.map((cmt) => {
         let userId = cmt.user;
-        const thisUser = allUsers.find((item) => item._id === userId);
+        const thisUser = allUsers.find((item) => item?._id === userId);
         return {
           ...cmt,
           avatar: thisUser?.avatar,
@@ -93,7 +94,7 @@ const Post = ({ post, avt, user }) => {
 
       // Ứng với mỗi tag, lấy ra tagName
       const tagsInfo = postTags.map((tag) => {
-        const thisTag = allTags.find((item) => item._id === tag);
+        const thisTag = allTags.find((item) => item?._id === tag);
 
         return {
           tag,
@@ -104,10 +105,12 @@ const Post = ({ post, avt, user }) => {
       if (thisReaction === null) setReaction(false);
       else setReaction(true);
 
+      console.log("tagsProp>>>", tagsProp);
       // số tim
       setReactionCount(postReaction);
       setTags(tagsInfo);
       setCmts(commentsWithInfo);
+      setHostApp(thisHost);
     };
 
     getData();
@@ -120,6 +123,7 @@ const Post = ({ post, avt, user }) => {
           <View style={{ position: "absolute", right: 0, top: 10 }}>
             <Fontisto name="more-v-a" size={30} marginRight={20} />
           </View>
+
           <View style={styles.headerPost}>
             <Image
               style={{
@@ -129,7 +133,9 @@ const Post = ({ post, avt, user }) => {
                 borderWidth: 2,
                 borderColor: "black",
               }}
-              source={avts[avt]?.image}
+              source={{
+                uri: user.avatar,
+              }}
             />
             <View
               style={{
@@ -211,21 +217,23 @@ const Post = ({ post, avt, user }) => {
           >
             <FlatList
               numColumns={3}
-              data={post.image}
+              data={post?.image}
               renderItem={({ item, index }) => (
-                <ImgPost src={item} index={index} />
+                <ImgPost src={item} index={index} key={index} />
               )}
-              keyExtractor={(item) => item.id}
+              // keyExtractor={(item) => item._id}
             />
             <View style={styles.tagView}>
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                data={tags}
-                renderItem={({ item }) => (
-                  <Text style={styles.tag}>{item.nameTag}</Text>
+                data={tagsProp ? tagsProp : tags}
+                renderItem={({ item, index }) => (
+                  <Text style={styles.tag} key={index}>
+                    {item.nameTag}
+                  </Text>
                 )}
-                keyExtractor={(item) => item.id}
+                // keyExtractor={(item) => item._id}
                 style={{ maxWidth: 500 }}
               />
             </View>
@@ -243,17 +251,18 @@ const Post = ({ post, avt, user }) => {
             onPress={async () => {
               if (!reaction) {
                 const newReact = {
-                  user: user._id,
-                  post: post._id,
+                  user: hostApp?._id,
+                  post: post?._id,
                 };
                 const addReact = await api.addReaction(newReact);
+                console.log("newReact>>>", addReact);
               } else {
                 const allReactions = await api.getAllReactions();
                 const thisReaction = allReactions.find((item) => {
-                  return item.post === post?._id && item.user === user._id;
+                  return item.post === post?._id && item.user === hostApp?._id;
                 });
                 try {
-                  api.deleteReaction(thisReaction._id);
+                  api.deleteReaction(thisReaction?._id);
                 } catch (error) {}
               }
               setReaction(!reaction);
@@ -340,7 +349,7 @@ const Post = ({ post, avt, user }) => {
                 style={[styles.cmtArr]}
                 data={cmts}
                 renderItem={({ item }) => <Cmt cmt={item} />}
-                keyExtractor={(item) => item.id}
+                // keyExtractor={(item) => item.id}
               />
             </View>
             <View style={styles.inputView}>
@@ -359,9 +368,9 @@ const Post = ({ post, avt, user }) => {
                 onPress={async () => {
                   const newComment = text;
                   const payloadComment = {
-                    user: user._id,
+                    user: hostApp?._id,
                     content: newComment,
-                    post: post._id,
+                    post: post?._id,
                   };
 
                   let postedComment;
@@ -377,8 +386,8 @@ const Post = ({ post, avt, user }) => {
                   //Kết thêm info vào postedComment
                   const newCommentToState = {
                     ...postedComment,
-                    avatar: user.avatar,
-                    name: user.nameUser,
+                    avatar: hostApp.avatar,
+                    name: hostApp.nameUser,
                   };
 
                   //setCmt
@@ -400,6 +409,7 @@ export default Post;
 
 const styles = StyleSheet.create({
   postComponent: {
+    width: windowWidth,
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#EDAE32",
