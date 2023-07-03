@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   Pressable,
   ScrollView,
-  KeyboardAvoidingView,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import {
@@ -45,8 +44,6 @@ initializeApp(firebaseConfig);
 const storage = getStorage();
 
 const PostScreen = ({ navigation }) => {
-  const [text, setText] = useState('');
-  const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
   const [textInputs1, setTextInputs1] = useState([]);
   const [textInputs2, setTextInputs2] = useState([]);
   const [combinedText1, setCombinedText1] = useState('');
@@ -57,12 +54,6 @@ const PostScreen = ({ navigation }) => {
   const [Ration, setRation] = useState('');
   const [Describe, setDescribe] = useState('');
   const [currentTime, setCurrentTime] = useState('');
-
-  const handleContentSizeChange = (event) => {
-    setContentSize(event.nativeEvent.contentSize);
-  };
-
-
   const handleAddInput1 = () => {
     setTextInputs1([...textInputs1, { id: textInputs1.length }]);
   };
@@ -414,31 +405,24 @@ const PostScreen = ({ navigation }) => {
             marginTop: 40,
           }}
         >
-           <ScrollView style={{width:"100%"}}>
-        <TextInput
-          style={{
-            marginLeft: 20,
-            height: 120,
-            width: "90%",
-            borderColor: 'gray',
-            borderWidth: 1,
-            borderRadius: 15,
-            fontSize: 18,
-            fontWeight: "bold",
-            marginTop: 5,
-            padding: 20,
-            backgroundColor:"#FFFFFF",
-            minHeight: 40,
-            height: Math.max(40, contentSize.height),
-          }}
-          placeholder="Nhập mô tả, cảm nghĩ ..."
-          multiline={true}
-          onChangeText={setDescribe}
-          onContentSizeChange={handleContentSizeChange}
-          value={text}
-        />
-        
-      </ScrollView>
+          <TextInput
+            style={{
+              height: 120,
+              width: "90%",
+              borderWidth: 1,
+              borderRadius: 15,
+              fontSize: 18,
+              fontWeight: "bold",
+              marginTop: 5,
+              padding: 20,
+              backgroundColor:"#FFFFFF",
+            }}
+            placeholder="Nhập mô tả, cảm nghĩ ..."
+            minHeight={120}
+            
+            value={Describe}
+            onChangeText={(text) => setDescribe(text)}
+          ></TextInput>
         </View>
         <View style={{ height: 100 }}>
         </View>
@@ -494,12 +478,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     marginTop: 20,
-  },
-  scollview: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: "100%",
   },
 });
 export default PostScreen;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,36 @@ import {
   SafeAreaView,
   TextInput,
   FlatList,
+  Pressable,
 } from "react-native";
+
+import { api } from "../api/api";
+
 import { CategoryCard, TrendingCard } from "../components";
 
 import { FONTS, COLORS, SIZES, icons, images, dummyData } from "../constants";
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route }) => {
+  const [state, setState] = useState({
+    allPosts: [],
+    tredingRecipe: {},
+  });
+
+  useEffect(async () => {
+    const result = await api.getAllPosts();
+    if (result) {
+      let tredingRecipe = result.reduce(function (item1, item2) {
+        return item1?.reactionCount > item2?.reactionCount ? item1 : item2;
+      });
+      setState((prev) => ({
+        ...prev,
+        allPosts: result,
+        tredingRecipe: tredingRecipe,
+      }));
+    }
+  }, []);
+
+  const [myUserId, setMyUserId] = useState(route.params.myUserId);
   function renderHeader() {
     return (
       <View
@@ -32,15 +56,17 @@ const Home = ({ navigation }) => {
             style={{
               color: COLORS.darkGreen,
               ...FONTS.h2,
+              fontWeight: "bold",
             }}
           >
-            Hello Techieegy's
+            Hello Chef's
           </Text>
           <Text
             style={{
               marginTop: 3,
-              color: COLORS.gray,
+              color: COLORS.black,
               ...FONTS.body3,
+              fontWeight: "bold",
             }}
           >
             What you want to cook today?
@@ -49,7 +75,7 @@ const Home = ({ navigation }) => {
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("Profile", {
-              myUserId: "6492620f3379bee002a3345b",
+              myUserId: myUserId,
             })
           }
         >
@@ -68,7 +94,12 @@ const Home = ({ navigation }) => {
 
   function renderSearchBar() {
     return (
-      <View
+      <Pressable
+        onPress={() =>
+          navigation.navigate("Search", {
+            myUserId: myUserId,
+          })
+        }
         style={{
           flexDirection: "row",
           height: 50,
@@ -87,16 +118,22 @@ const Home = ({ navigation }) => {
             tintColor: COLORS.gray,
           }}
         />
-        <TextInput
+        <View
           style={{
             marginLeft: SIZES.radius,
             ...FONTS.body3,
             flex: 1,
           }}
-          placeholder="Search Recipes"
-          placeholderTextColor={COLORS.gray}
-        />
-      </View>
+        >
+          <Text
+            style={{
+              ...FONTS.body3,
+            }}
+          >
+            Search Recipe
+          </Text>
+        </View>
+      </Pressable>
     );
   }
 
@@ -166,27 +203,17 @@ const Home = ({ navigation }) => {
           style={{
             marginHorizontal: SIZES.padding,
             ...FONTS.h2,
+            fontWeight: "bold",
           }}
         >
           Trending Recipe
         </Text>
-        <FlatList
-          data={dummyData.trendingRecipes}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => `${item.id}`}
-          renderItem={({ item, index }) => {
-            return (
-              <CategoryCard
-                key={index}
-                data={item}
-                containerStyle={{
-                  marginLeft: index === 0 ? SIZES.padding : 0,
-                }}
-                onPress={() => navigation.navigate("Recipe", { recipe: item })}
-              />
-            );
-          }}
+        <CategoryCard
+          key={state.tredingRecipe?._id}
+          data={state.tredingRecipe}
+          onPress={() =>
+            navigation.navigate("Recipe", { recipe: state.tredingRecipe })
+          }
         />
       </View>
     );
@@ -206,6 +233,7 @@ const Home = ({ navigation }) => {
           style={{
             flex: 1,
             ...FONTS.h2,
+            fontWeight: "bold",
           }}
         >
           Categories
@@ -213,7 +241,7 @@ const Home = ({ navigation }) => {
         <TouchableOpacity>
           <Text
             style={{
-              color: COLORS.gray,
+              color: COLORS.darkGreen,
               ...FONTS.body4,
             }}
           >
@@ -228,12 +256,12 @@ const Home = ({ navigation }) => {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.orange,
       }}
     >
       <FlatList
         data={dummyData.categories}
-        keyExtractor={(item) => item.id.toString()}
+        // keyExtractor={(item) => item.id.toString()}
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
