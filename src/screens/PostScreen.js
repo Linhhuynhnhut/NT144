@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Pressable,
   ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import {
@@ -26,7 +27,26 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { api } from "../api/api";
 import COLORS from "../consts/colors";
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+//cài đặt firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyD7EvGPugaTj3Unb3B1EBs1KVoYa9863UA",
+  authDomain: "recipeshareapp-f3521.firebaseapp.com",
+  projectId: "recipeshareapp-f3521",
+  storageBucket: "recipeshareapp-f3521.appspot.com",
+  messagingSenderId: "741179679472",
+  appId: "1:741179679472:web:1dd0bca75753597e385835",
+  measurementId: "G-VP9XXSEQ2L"
+};
+
+initializeApp(firebaseConfig);
+const storage = getStorage();
+
 const PostScreen = ({ navigation }) => {
+  const [text, setText] = useState('');
+  const [contentSize, setContentSize] = useState({ width: 0, height: 0 });
   const [textInputs1, setTextInputs1] = useState([]);
   const [textInputs2, setTextInputs2] = useState([]);
   const [combinedText1, setCombinedText1] = useState('');
@@ -37,7 +57,12 @@ const PostScreen = ({ navigation }) => {
   const [Ration, setRation] = useState('');
   const [Describe, setDescribe] = useState('');
   const [currentTime, setCurrentTime] = useState('');
-  
+
+  const handleContentSizeChange = (event) => {
+    setContentSize(event.nativeEvent.contentSize);
+  };
+
+
   const handleAddInput1 = () => {
     setTextInputs1([...textInputs1, { id: textInputs1.length }]);
   };
@@ -85,29 +110,56 @@ const PostScreen = ({ navigation }) => {
     setRation(Ration);
     setDescribe(Describe);
     const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    const date = `${hours}:${minutes}:${seconds}`;
+    const day = now.getDate();
+    const month = now.getMonth()+1;
+    const year = now.getFullYear();
+    const date = `${day}:${month}:${year}`;
     setCurrentTime(date);
-
-    // const payload = {
-    //   content: content,
-    //   title: title,
-    //   date: date,
-    //   user: "64985b74c37ec89581785f47"
-    // };
-    // console.log(payload);
-    // let Posted;
+  
+    try {
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const storageRef = ref(storage, 'images/' + Date.now());
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+      URLimage = downloadURL;
+      console.log('Hình ảnh được tải lên thành công. URL:', downloadURL);
+      setImageUrl(downloadURL);
+  
+      const payload = {
+        content: content,
+        title: title,
+        date: date,
+        user: "64985b74c37ec89581785f47",
+        image: downloadURL,
+      };
+      console.log(payload);
+    //  let Posted;
     // try{
     //   Posted = await api.addPost(payload);
+    //   Alert.alert(
+    //     "Notification",
+    //     "Post added successfully",
+    //     [
+    //       {
+    //         text: "OK",
+    //         onPress: () => console.log("Cancel Pressed"),
+    //         style: "cancel",
+    //       },
+    //     ],
+    //     { cancelable: false }
+    //   );
     //   console.log('Post added successfully:', response.data);
     // }
     // catch(error) {
     //     console.error('Error adding post:', error);
     //     // Xử lý lỗi
     //   };
+    } catch (error) {
+      console.log('Lỗi khi tải lên hình ảnh:', error);
+    }
   };
+  
 
   const renderTextInputs = (viewIndex, inputs) => {
     return inputs.map((input, index) => (
@@ -155,36 +207,36 @@ const PostScreen = ({ navigation }) => {
       setTextInputs2(updatedInputs);
     }
   };
-  const [images, setImages] = useState([]);
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setImages((prevImages) => [...prevImages, result.uri]);
-    }
-  };
+  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const pickImageFromLibrary = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
+      aspect: [10, 10],
       quality: 1,
     });
-
-    if (!result.cancelled) {
-      setImages((prevImages) => [...prevImages, result.uri]);
+    
+    if (!result.canceled) {
+      const source = result.uri;
+      console.log(source);
+      setImage(source);
     }
   };
 
-  const deleteImage = (index) => {
-    const updatedImages = [...images];
-    updatedImages.splice(index, 1);
-    setImages(updatedImages);
+  const uploadImageToFirebase = async () => {
+    try {
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const storageRef = ref(storage, 'images/' + Date.now());
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+      URLimage = downloadURL;
+      console.log('Hình ảnh được tải lên thành công. URL:', downloadURL);
+      setImageUrl(downloadURL);
+    } catch (error) {
+      console.log('Lỗi khi tải lên hình ảnh:', error);
+    }
   };
 
   const handlePress = () => {
@@ -197,7 +249,6 @@ const PostScreen = ({ navigation }) => {
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel",
         },
-        { text: "Take a Photo", onPress: pickImage },
         { text: "Choose from Library", onPress: pickImageFromLibrary },
       ],
       { cancelable: false }
@@ -231,20 +282,20 @@ const PostScreen = ({ navigation }) => {
       </View>
       <ScrollView style={{backgroundColor :"#faeccd"}}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
+        {image &&<Image source={{ uri: image }} style={{ width: "90%", height: 250, marginTop: 20, borderRadius: 20 }} />}
           <TouchableOpacity
             style={{
-              height: 240,
-              width: "100%",
-              backgroundColor: "gray",
+              height: 50,
+              width: "30%",
+              backgroundColor:"#F7D600",
               alignItems: "center",
               justifyContent: "center",
+              marginTop: 20,
+              borderRadius: 20,
             }}
             onPress={handlePress}
           >
-            <Feather name="camera" size={120} color="black" marginLeft={20} />
-            <Text style={{ fontSize: 18, fontWeight: 700 }}>
-              Đăng hình đại diện món ăn
-            </Text>
+            <Feather name="camera" size={30} color="black" />
           </TouchableOpacity>
           <TextInput
             style={{
@@ -363,26 +414,33 @@ const PostScreen = ({ navigation }) => {
             marginTop: 40,
           }}
         >
-          <TextInput
-            style={{
-              height: 120,
-              width: "90%",
-              borderWidth: 1,
-              borderRadius: 15,
-              fontSize: 18,
-              fontWeight: "bold",
-              marginTop: 5,
-              padding: 20,
-              backgroundColor:"#FFFFFF",
-            }}
-            placeholder="Nhập mô tả, cảm nghĩ ..."
-            minHeight={120}
-            
-            value={Describe}
-            onChangeText={(text) => setDescribe(text)}
-          ></TextInput>
+           <ScrollView style={{width:"100%"}}>
+        <TextInput
+          style={{
+            marginLeft: 20,
+            height: 120,
+            width: "90%",
+            borderColor: 'gray',
+            borderWidth: 1,
+            borderRadius: 15,
+            fontSize: 18,
+            fontWeight: "bold",
+            marginTop: 5,
+            padding: 20,
+            backgroundColor:"#FFFFFF",
+            minHeight: 40,
+            height: Math.max(40, contentSize.height),
+          }}
+          placeholder="Nhập mô tả, cảm nghĩ ..."
+          multiline={true}
+          onChangeText={setDescribe}
+          onContentSizeChange={handleContentSizeChange}
+          value={text}
+        />
+        
+      </ScrollView>
         </View>
-        <View style={{ height: 200 }}>
+        <View style={{ height: 100 }}>
         </View>
  
       </ScrollView>
@@ -436,6 +494,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     marginTop: 20,
+  },
+  scollview: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: "100%",
   },
 });
 export default PostScreen;
