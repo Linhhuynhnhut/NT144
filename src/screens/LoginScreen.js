@@ -189,6 +189,9 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     marginBottom: 32,
   },
+  spinnerTextStyle: {
+    color: '#FFF',
+  },
 });
 
 export default LoginScreen;
