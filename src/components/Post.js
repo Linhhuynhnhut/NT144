@@ -53,6 +53,7 @@ const Cmt = ({ cmt }) => {
 };
 
 const Post = ({ post, user, host, tagsProp }) => {
+  // console.log(post);
   const [hostApp, setHostApp] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [cmts, setCmts] = useState(null);
@@ -65,11 +66,12 @@ const Post = ({ post, user, host, tagsProp }) => {
   useEffect(() => {
     const getData = async () => {
       // Lấy tất cả comment và user và reaction và tag
-      const allComments = await api.getAllComments();
+
       const allUsers = await api.getAllUsers();
       const allReactions = await api.getAllReactions();
+      const allComments = await api.getAllComments();
       const allTags = await api.getAllTags();
-      const thisHost = await api.getUser(host);
+      const thisHost = await api.getUser(host?._id);
       //2. Lọc ra các comment của bài Post, có thả tim ko, tag nào được sử dụng
       const comments = allComments.filter((item) => item.post === post?._id);
       const thisReaction =
@@ -79,7 +81,7 @@ const Post = ({ post, user, host, tagsProp }) => {
       const postReaction = allReactions.filter(
         (item) => item.post === post?._id
       );
-      const postTags = post.tags;
+      const postTags = post?.tags;
 
       //3. Ứng với mỗi comment => lấy ra userId để kết với thông tin user
       const commentsWithInfo = comments.map((cmt) => {
@@ -105,7 +107,6 @@ const Post = ({ post, user, host, tagsProp }) => {
       if (thisReaction === null) setReaction(false);
       else setReaction(true);
 
-      console.log("tagsProp>>>", tagsProp);
       // số tim
       setReactionCount(postReaction);
       setTags(tagsInfo);
@@ -120,9 +121,9 @@ const Post = ({ post, user, host, tagsProp }) => {
     <>
       <View style={styles.postComponent}>
         <View style={styles.postView}>
-          <View style={{ position: "absolute", right: 0, top: 10 }}>
+          {/* <View style={{ position: "absolute", right: 0, top: 10 }}>
             <Fontisto name="more-v-a" size={30} marginRight={20} />
-          </View>
+          </View> */}
 
           <View style={styles.headerPost}>
             <Image
@@ -227,7 +228,7 @@ const Post = ({ post, user, host, tagsProp }) => {
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                data={tagsProp ? tagsProp : tags}
+                data={tagsProp ? tagsProp : post.tags}
                 renderItem={({ item, index }) => (
                   <Text style={styles.tag} key={index}>
                     {item.nameTag}

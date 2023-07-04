@@ -17,6 +17,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import COLORS from "../consts/colors";
 import { LinearGradient } from "expo-linear-gradient";
 const ProfileScreen = ({ navigation, route }) => {
+  console.log("routeProfile>>>", route.params.myUserId);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const buttonsTaskbar = [
@@ -66,13 +67,24 @@ const ProfileScreen = ({ navigation, route }) => {
           tags: tagsInThisPost,
         };
       });
-      console.log("allPostWithTagName>>>", allPostsWithTagName[0].tags);
       const postLikedIds = allReactions
         .filter((item) => item.user === user?._id)
         .map((r) => r?.post);
 
       const postLiked = posts.filter((item) => {
         return postLikedIds.includes(item._id);
+      });
+
+      const allPostsLikedWithTagName = postLiked.map((post) => {
+        const thisPostTags = post?.tags;
+        const tagsInThisPost = allTags.filter((tag) => {
+          return thisPostTags.includes(tag._id);
+        });
+
+        return {
+          ...post,
+          tags: tagsInThisPost,
+        };
       });
 
       // const followerInfo = followInfo.follower.map((user) => {
@@ -84,14 +96,14 @@ const ProfileScreen = ({ navigation, route }) => {
       //   };
       // });
 
-      // console.log("myUser>>>", user);
+      // console.log("myUser>>>", allPostsWithTagName);
 
       setprofileInfo(followInfo);
       setUser(user);
       setAvt(findItem?.id || 0);
       setIsPressedAvt(findItem?.id);
       setPosts(allPostsWithTagName);
-      setPostsLiked(postLiked);
+      setPostsLiked(allPostsLikedWithTagName);
     };
 
     getData();
@@ -192,7 +204,7 @@ const ProfileScreen = ({ navigation, route }) => {
           style={styles.buttonLeft}
           onPress={() =>
             navigation.navigate("Home", {
-              myUserId: user._id,
+              myUserId: user?._id,
             })
           }
         >
