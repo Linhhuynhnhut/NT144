@@ -7,10 +7,10 @@ import {
   Animated,
   Platform,
 } from "react-native";
-import { BlurView } from "@react-native-community/blur";
+// import { BlurView } from "@react-native-community/blur";
 
-import { SIZES, FONTS, COLORS, icons } from "../../constants";
-import { Viewers } from "../../components";
+import { SIZES, FONTS, COLORS, icons } from "../constants";
+import { Viewers } from "../components";
 
 const HEADER_HEIGHT = 350;
 
@@ -85,17 +85,18 @@ const RecipeCreatorCardDetail = ({ selectedRecipe }) => {
 const RecipeCreatorCardInfo = ({ selectedRecipe }) => {
   if (Platform.OS === "ios") {
     return (
-      <BlurView
-        blurType="dark"
-        overlayColor=""
-        blurAmount={10}
-        style={{
-          flex: 1,
-          borderRadius: SIZES.radius,
-        }}
-      >
-        <RecipeCreatorCardDetail selectedRecipe={selectedRecipe} />
-      </BlurView>
+      <></>
+      // <BlurView
+      //   blurType="dark"
+      //   overlayColor=""
+      //   blurAmount={10}
+      //   style={{
+      //     flex: 1,
+      //     borderRadius: SIZES.radius,
+      //   }}
+      // >
+      //   <RecipeCreatorCardDetail selectedRecipe={selectedRecipe} />
+      // </BlurView>
     );
   } else {
     return (
@@ -112,13 +113,13 @@ const RecipeCreatorCardInfo = ({ selectedRecipe }) => {
   }
 };
 
-const Recipe = ({ navigation, route }) => {
+const Recipe = ({ navigation, recipe, route }) => {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
   // const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    let { recipe } = route.params;
+    let { recipe } = recipe.image;
     setSelectedRecipe(recipe);
   }, []);
 
@@ -139,7 +140,7 @@ const Recipe = ({ navigation, route }) => {
         }}
       >
         {/* Only viewwable at IOS */}
-        {/* <Animated.View
+        <Animated.View
           style={{
             position: "absolute",
             top: 100,
@@ -147,15 +148,15 @@ const Recipe = ({ navigation, route }) => {
             right: 0,
             height: 0,
             backgroundColor: COLORS.black,
-            opacity: scrollY.interpolate({
-              inputRange: [HEADER_HEIGHT - 100, HEADER_HEIGHT - 70],
-              outputRange: [0, 1],
-            }),
+            // opacity: scrollY.interpolate({
+            //   inputRange: [HEADER_HEIGHT - 100, HEADER_HEIGHT - 70],
+            //   outputRange: [0, 1],
+            // }),
           }}
-        /> */}
+        />
         {/* Header Bar Title only for IOS*/}
 
-        {/* <Animated.View
+        <Animated.View
           style={{
             position: "absolute",
             top: 100,
@@ -166,19 +167,19 @@ const Recipe = ({ navigation, route }) => {
             alignItems: "center",
             justifyContent: "flex-end",
             paddingBottom: 10,
-            opacity: scrollY.interpolate({
-              inputRange: [HEADER_HEIGHT - 100, HEADER_HEIGHT - 50],
-              outputRange: [0, 1],
-            }),
-            transform: [
-              {
-                translateY: scrollY.interpolate({
-                  inputRange: [HEADER_HEIGHT - 100, HEADER_HEIGHT - 50],
-                  outputRange: [50, 0],
-                  extrapolate: "clamp",
-                }),
-              },
-            ],
+            // opacity: scrollY.interpolate({
+            //   inputRange: [HEADER_HEIGHT - 100, HEADER_HEIGHT - 50],
+            //   outputRange: [0, 1],
+            // }),
+            // transform: [
+            //   {
+            //     translateY: scrollY.interpolate({
+            //       inputRange: [HEADER_HEIGHT - 100, HEADER_HEIGHT - 50],
+            //       outputRange: [50, 0],
+            //       extrapolate: "clamp",
+            //     }),
+            //   },
+            // ],
           }}
         >
           <Text
@@ -197,7 +198,7 @@ const Recipe = ({ navigation, route }) => {
           >
             {selectedRecipe?.author?.name}
           </Text>
-        </Animated.View> */}
+        </Animated.View>
 
         <TouchableOpacity
           style={{
@@ -254,8 +255,10 @@ const Recipe = ({ navigation, route }) => {
           overflow: "hidden",
         }}
       >
-        {/* <Animated.Image
-          source={selectedRecipe?.image}
+        <Animated.Image
+          source={{
+            uri: "https://res.cloudinary.com/dbqvo0078/image/upload/v1688475091/Image_not_available_f5mwsi.png",
+          }}
           resizeMode="contain"
           style={{
             height: HEADER_HEIGHT,
@@ -275,8 +278,8 @@ const Recipe = ({ navigation, route }) => {
               },
             ],
           }}
-        /> */}
-        {/* <Animated.View
+        />
+        <Animated.View
           style={{
             position: "absolute",
             bottom: 10,
@@ -295,7 +298,7 @@ const Recipe = ({ navigation, route }) => {
           }}
         >
           <RecipeCreatorCardInfo selectedRecipe={selectedRecipe} />
-        </Animated.View> */}
+        </Animated.View>
       </View>
     );
   }
@@ -348,7 +351,7 @@ const Recipe = ({ navigation, route }) => {
         backgroundColor: COLORS.white,
       }}
     >
-      {/* <Animated.FlatList
+      <Animated.FlatList
         data={selectedRecipe?.ingredients}
         keyExtractor={(item) => `${item.id}`}
         showsVerticalScrollIndicator={false}
@@ -420,7 +423,7 @@ const Recipe = ({ navigation, route }) => {
             </View>
           </View>
         )}
-      /> */}
+      />
       {renderHeaderBar()}
     </View>
   );

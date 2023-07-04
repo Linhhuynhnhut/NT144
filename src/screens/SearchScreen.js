@@ -16,6 +16,8 @@ import TaskBar from "../components/TaskBar";
 import { LinearGradient } from "expo-linear-gradient";
 import { icons } from "../constants";
 const SearchScreen = ({ navigation, route }) => {
+  console.log("routeSearch>>>", route.params.myUserId);
+
   // console.log(route.params.myUserId);
   const [text, setText] = useState("");
   const [allUsers, setAllUsers] = useState([]);
@@ -78,7 +80,11 @@ const SearchScreen = ({ navigation, route }) => {
       <View style={styles.header}>
         <Pressable
           style={styles.buttonLeft}
-          onPress={() => navigation.navigate("Home", {})}
+          onPress={() =>
+            navigation.navigate("Home", {
+              myUserId: route.params.myUserId,
+            })
+          }
         >
           <Image
             style={{ width: 40, height: 30, opacity: 0.8 }}

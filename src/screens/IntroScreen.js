@@ -1,14 +1,14 @@
 // import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
-  Text,
   View,
   Pressable,
   Image,
   FlatList,
   Dimensions,
 } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Layout, Text, ViewPager } from "@ui-kitten/components";
 
 // import Carousel from "react-native-snap-carousel";
 import React, { useState, useEffect } from "react";
@@ -36,7 +36,6 @@ const Item = ({ item }) => {
 };
 
 const IntroScreen = ({ navigation, route }) => {
-
   const [userToken, setUserToken] = useState(null);
 
   useEffect(() => {
@@ -50,11 +49,11 @@ const IntroScreen = ({ navigation, route }) => {
     };
 
     checkLoginStatus();
-
   }, []);
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [userArr, setUserArr] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(1);
 
   const updateCurrentSlideIndex = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -68,13 +67,13 @@ const IntroScreen = ({ navigation, route }) => {
     } else {
       navigation.navigate("Login");
     }
-  }
+  };
 
   return (
     <>
       <View style={styles.introView}>
         <View style={styles.imageView}>
-          <FlatList
+          {/* <FlatList
             onMomentumScrollEnd={(e) => updateCurrentSlideIndex(e)}
             pagingEnabled
             data={slides}
@@ -83,32 +82,28 @@ const IntroScreen = ({ navigation, route }) => {
             horizontal
             showsHorizontalScrollIndicator={true}
             //style={{ backgroundColor: "#fff" }}
-          />
+          /> */}
+          <ViewPager
+            selectedIndex={selectedIndex}
+            onSelect={(index) => setSelectedIndex(index)}
+          >
+            <Layout style={styles.tab} level="2">
+              <Item item={slides[0]} />
+            </Layout>
+            <Layout style={styles.tab} level="2">
+              <Item item={slides[1]} />
+            </Layout>
+            <Layout style={styles.tab} level="2">
+              <Item item={slides[2]} />
+            </Layout>
+          </ViewPager>
         </View>
-        <View style={styles.indicatorContainer}>
-          {slides.map((_, index) => {
-            return (
-              <View
-                key={index}
-                style={[
-                  styles.indicator,
-                  currentSlideIndex == index && {
-                    backgroundColor: "#f27e35",
-                    width: 25,
-                  },
-                ]}
-              />
-            );
-          })}
-        </View>
+
         <Text style={styles.title}>Delicious Food!</Text>
         <Text style={styles.discription}>
           Create and post your recipe to everyone
         </Text>
-        <Pressable
-          style={styles.button}
-          onPress={pressStart}
-        >
+        <Pressable style={styles.button} onPress={pressStart}>
           <Text style={{ color: "#fff", fontWeight: "bold" }}>START</Text>
         </Pressable>
       </View>
@@ -138,7 +133,6 @@ const styles = StyleSheet.create({
     height: 300,
     zIndex: 5,
     //left: 10,
-    //backgroundColor: "#000",
   },
   title: {
     fontSize: 30,
@@ -184,6 +178,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 4,
     elevation: 5,
+  },
+  tab: {
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
   },
 });
 export default IntroScreen;

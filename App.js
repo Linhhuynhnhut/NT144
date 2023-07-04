@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Pressable, LogBox } from "react-native";
+import { StyleSheet, View, Pressable, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -12,7 +12,10 @@ import SearchScreen from "./src/screens/SearchScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import PostScreen from "./src/screens/PostScreen";
+import Recipe from "./src/screens/Recipe";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import * as eva from "@eva-design/eva";
+import { ApplicationProvider, Layout, Text } from "@ui-kitten/components";
 //import AsyncStorage from '@react-native-async-storage/async-storage';
 
 LogBox.ignoreLogs([
@@ -42,7 +45,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <>
+    <ApplicationProvider {...eva} theme={eva.light}>
       <NavigationContainer>
         {/* <Tab.Navigator
           initialRouteName={AppStack}
@@ -87,13 +90,14 @@ export default function App() {
           <Stack.Screen name="Introduction" component={IntroScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Recipe" component={Recipe} />
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="Post" component={PostScreen} />
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </ApplicationProvider>
   );
 }
 
