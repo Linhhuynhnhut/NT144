@@ -26,6 +26,23 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { api } from "../api/api";
 import COLORS from "../consts/colors";
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+//cài đặt firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyD7EvGPugaTj3Unb3B1EBs1KVoYa9863UA",
+  authDomain: "recipeshareapp-f3521.firebaseapp.com",
+  projectId: "recipeshareapp-f3521",
+  storageBucket: "recipeshareapp-f3521.appspot.com",
+  messagingSenderId: "741179679472",
+  appId: "1:741179679472:web:1dd0bca75753597e385835",
+  measurementId: "G-VP9XXSEQ2L"
+};
+
+initializeApp(firebaseConfig);
+const storage = getStorage();
+
 const PostScreen = ({ navigation, route }) => {
   const host = route.params.myUserId;
   const [textInputs1, setTextInputs1] = useState([]);
@@ -33,12 +50,11 @@ const PostScreen = ({ navigation, route }) => {
   const [combinedText1, setCombinedText1] = useState("");
   const [combinedText2, setCombinedText2] = useState("");
   const [showCombinedText, setShowCombinedText] = useState(false);
-  const [namePost, setNamePost] = useState("");
-  const [CookingTime, setCookingTime] = useState("");
-  const [Ration, setRation] = useState("");
-  const [Describe, setDescribe] = useState("");
-  const [currentTime, setCurrentTime] = useState("");
-
+  const [namePost, setNamePost] = useState('');
+  const [CookingTime, setCookingTime] = useState('');
+  const [Ration, setRation] = useState('');
+  const [Describe, setDescribe] = useState('');
+  const [currentTime, setCurrentTime] = useState('');
   const handleAddInput1 = () => {
     setTextInputs1([...textInputs1, { id: textInputs1.length }]);
   };
@@ -90,29 +106,56 @@ const PostScreen = ({ navigation, route }) => {
     setRation(Ration);
     setDescribe(Describe);
     const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    const date = `${hours}:${minutes}:${seconds}`;
+    const day = now.getDate();
+    const month = now.getMonth()+1;
+    const year = now.getFullYear();
+    const date = `${day}:${month}:${year}`;
     setCurrentTime(date);
-
-    // const payload = {
-    //   content: content,
-    //   title: title,
-    //   date: date,
-    //   user: host
-    // };
-    // console.log(payload);
-    // let Posted;
+  
+    try {
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const storageRef = ref(storage, 'images/' + Date.now());
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+      URLimage = downloadURL;
+      console.log('Hình ảnh được tải lên thành công. URL:', downloadURL);
+      setImageUrl(downloadURL);
+  
+      const payload = {
+        content: content,
+        title: title,
+        date: date,
+        user: host,
+        image: downloadURL,
+      };
+      console.log(payload);
+    //  let Posted;
     // try{
     //   Posted = await api.addPost(payload);
+    //   Alert.alert(
+    //     "Notification",
+    //     "Post added successfully",
+    //     [
+    //       {
+    //         text: "OK",
+    //         onPress: () => console.log("Cancel Pressed"),
+    //         style: "cancel",
+    //       },
+    //     ],
+    //     { cancelable: false }
+    //   );
     //   console.log('Post added successfully:', response.data);
     // }
     // catch(error) {
     //     console.error('Error adding post:', error);
     //     // Xử lý lỗi
     //   };
+    } catch (error) {
+      console.log('Lỗi khi tải lên hình ảnh:', error);
+    }
   };
+  
 
   const renderTextInputs = (viewIndex, inputs) => {
     return inputs.map((input, index) => (
@@ -170,36 +213,36 @@ const PostScreen = ({ navigation, route }) => {
       setTextInputs2(updatedInputs);
     }
   };
-  const [images, setImages] = useState([]);
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setImages((prevImages) => [...prevImages, result.uri]);
-    }
-  };
+  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const pickImageFromLibrary = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
+      aspect: [10, 10],
       quality: 1,
     });
-
-    if (!result.cancelled) {
-      setImages((prevImages) => [...prevImages, result.uri]);
+    
+    if (!result.canceled) {
+      const source = result.uri;
+      console.log(source);
+      setImage(source);
     }
   };
 
-  const deleteImage = (index) => {
-    const updatedImages = [...images];
-    updatedImages.splice(index, 1);
-    setImages(updatedImages);
+  const uploadImageToFirebase = async () => {
+    try {
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const storageRef = ref(storage, 'images/' + Date.now());
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+      URLimage = downloadURL;
+      console.log('Hình ảnh được tải lên thành công. URL:', downloadURL);
+      setImageUrl(downloadURL);
+    } catch (error) {
+      console.log('Lỗi khi tải lên hình ảnh:', error);
+    }
   };
 
   const handlePress = () => {
@@ -212,7 +255,6 @@ const PostScreen = ({ navigation, route }) => {
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel",
         },
-        { text: "Take a Photo", onPress: pickImage },
         { text: "Choose from Library", onPress: pickImageFromLibrary },
       ],
       { cancelable: false }
@@ -248,20 +290,20 @@ const PostScreen = ({ navigation, route }) => {
       </View>
       <ScrollView style={{ backgroundColor: "#faeccd" }}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
+        {image &&<Image source={{ uri: image }} style={{ width: "90%", height: 250, marginTop: 20, borderRadius: 20 }} />}
           <TouchableOpacity
             style={{
-              height: 240,
-              width: "100%",
-              backgroundColor: "gray",
+              height: 50,
+              width: "30%",
+              backgroundColor:"#F7D600",
               alignItems: "center",
               justifyContent: "center",
+              marginTop: 20,
+              borderRadius: 20,
             }}
             onPress={handlePress}
           >
-            <Feather name="camera" size={120} color="black" marginLeft={20} />
-            <Text style={{ fontSize: 18, fontWeight: 700 }}>
-              Đăng hình đại diện món ăn
-            </Text>
+            <Feather name="camera" size={30} color="black" />
           </TouchableOpacity>
           <TextInput
             style={{
@@ -398,7 +440,9 @@ const PostScreen = ({ navigation, route }) => {
             onChangeText={(text) => setDescribe(text)}
           ></TextInput>
         </View>
-        <View style={{ height: 200 }}></View>
+        <View style={{ height: 100 }}>
+        </View>
+ 
       </ScrollView>
     </View>
   );
