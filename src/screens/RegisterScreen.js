@@ -38,6 +38,7 @@ const RegisterScreen = ({ navigation, route }) => {
       if (error) {
         // Xử lý lỗi khi mã hóa mật khẩu
         console.error(error);
+        setLoading(false);
         return;
       }
 
@@ -47,23 +48,29 @@ const RegisterScreen = ({ navigation, route }) => {
         password: hashedPassword,
         phoneNumber,
       };
-      // Gửi yêu cầu đăng ký người dùng
-      await api.addUser(payload);
+      try {
+        // Gửi yêu cầu đăng ký người dùng
+        await api.addUser(payload);
 
-      // Xử lý đăng ký thành công
-      const users = await api.getAllUsers(); 
-      const user = users.find((user) => user.mail === mail);
+        // Xử lý đăng ký thành công
+        const users = await api.getAllUsers();
+        const user = users.find((user) => user.mail === mail);
 
-      if (user) {
-        try {
-          await AsyncStorage.setItem('userToken', mail); 
-        } catch (error) {
-          console.error('Error when saving user session:', error);
+        if (user) {
+          try {
+            await AsyncStorage.setItem('userToken', mail);
+          } catch (error) {
+            console.error('Error when saving user session:', error);
+            setLoading(false);
+          }
+          console.log({ user });
           setLoading(false);
+          navigation.navigate('Home', { user });
         }
-        console.log({user});
+      } catch (error) {
+        alert("Email already exists! Please try again.");
+        //console.error(error);
         setLoading(false);
-        navigation.navigate('Home',{user});
       }
     });
     } catch (error) {
