@@ -23,6 +23,7 @@ const SearchScreen = ({ navigation, route }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
   const [allTags, setAllTags] = useState([]);
+  const [host, setHost] = useState(null);
   // taskbar
   const [currentButton, setCurrentButton] = useState(0);
   const [buttonWidth, setButtonWidth] = useState(0);
@@ -32,7 +33,7 @@ const SearchScreen = ({ navigation, route }) => {
   const [postsSearched, setPostsSearched] = useState([]);
   const selectButton = (index) => {
     setCurrentButton(index);
-    const newSelectedButtons = new Array(3).fill(false);
+    const newSelectedButtons = new Array(2).fill(false);
     newSelectedButtons[index] = true;
     setSelectedButtons(newSelectedButtons);
     Animated.timing(translateValue, {
@@ -65,7 +66,9 @@ const SearchScreen = ({ navigation, route }) => {
           tags: tagsInThisPost,
         };
       });
+      const myHostInfo = await api.getUser(route.params.myUserId);
 
+      setHost(myHostInfo);
       setAllUsers(allUsers);
       setAllPosts(postWithTagName);
       setAllTags(allTags);
@@ -227,7 +230,7 @@ const SearchScreen = ({ navigation, route }) => {
             onButtonLayout={onButtonLayout}
             setPostsSearched={setPostsSearched}
             data={postsSearched}
-            host={route.params.myUserId}
+            host={host}
           />
         </LinearGradient>
       </View>
