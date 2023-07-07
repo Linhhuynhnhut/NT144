@@ -48,16 +48,18 @@ const CategoryCard = ({ data, containerStyle, onPress }) => {
         style={{
           paddingHorizontal: 20,
           width: "75%",
+          // backgroundColor: "#000",
         }}
       >
         <Text style={{ flex: 1, ...FONTS.h3, color: COLORS.blue }}>
-          {user?.nameUser}
+          {data?.author.nameUser}
         </Text>
         <Text
           style={{
             ...FONTS.body5,
-            color: COLORS.lightGray2,
-            fontSize: 11,
+            color: "#9C6B29",
+            fontSize: 16,
+            fontWeight: "600",
           }}
         >
           {data?.title}

@@ -60,7 +60,7 @@ const Post = ({ post, user, host, tagsProp }) => {
   const [tags, setTags] = useState(null);
   const [text, setText] = useState("");
   const [reaction, setReaction] = useState(false);
-  const [reactionCount, setReactionCount] = useState(null);
+  const [reactionCount, setReactionCount] = useState(0);
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const Post = ({ post, user, host, tagsProp }) => {
       const comments = allComments.filter((item) => item.post === post?._id);
       const thisReaction =
         allReactions.find((item) => {
-          return item.post === post?._id && item.user === hostApp?._id;
+          return item.post === post?._id && item.user === thisHost?._id;
         }) || null;
       const postReaction = allReactions.filter(
         (item) => item.post === post?._id

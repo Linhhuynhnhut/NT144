@@ -26,8 +26,8 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { api } from "../api/api";
 import COLORS from "../consts/colors";
-import { initializeApp } from 'firebase/app';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 //cài đặt firebase
 const firebaseConfig = {
@@ -37,7 +37,7 @@ const firebaseConfig = {
   storageBucket: "recipeshareapp-f3521.appspot.com",
   messagingSenderId: "741179679472",
   appId: "1:741179679472:web:1dd0bca75753597e385835",
-  measurementId: "G-VP9XXSEQ2L"
+  measurementId: "G-VP9XXSEQ2L",
 };
 
 initializeApp(firebaseConfig);
@@ -50,11 +50,11 @@ const PostScreen = ({ navigation, route }) => {
   const [combinedText1, setCombinedText1] = useState("");
   const [combinedText2, setCombinedText2] = useState("");
   const [showCombinedText, setShowCombinedText] = useState(false);
-  const [namePost, setNamePost] = useState('');
-  const [CookingTime, setCookingTime] = useState('');
-  const [Ration, setRation] = useState('');
-  const [Describe, setDescribe] = useState('');
-  const [currentTime, setCurrentTime] = useState('');
+  const [namePost, setNamePost] = useState("");
+  const [CookingTime, setCookingTime] = useState("");
+  const [Ration, setRation] = useState("");
+  const [Describe, setDescribe] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
   const handleAddInput1 = () => {
     setTextInputs1([...textInputs1, { id: textInputs1.length }]);
   };
@@ -107,21 +107,21 @@ const PostScreen = ({ navigation, route }) => {
     setDescribe(Describe);
     const now = new Date();
     const day = now.getDate();
-    const month = now.getMonth()+1;
+    const month = now.getMonth() + 1;
     const year = now.getFullYear();
     const date = `${day}:${month}:${year}`;
     setCurrentTime(date);
-  
+
     try {
       const response = await fetch(image);
       const blob = await response.blob();
-      const storageRef = ref(storage, 'images/' + Date.now());
+      const storageRef = ref(storage, "images/" + Date.now());
       await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(storageRef);
       URLimage = downloadURL;
-      console.log('Hình ảnh được tải lên thành công. URL:', downloadURL);
+      console.log("Hình ảnh được tải lên thành công. URL:", downloadURL);
       setImageUrl(downloadURL);
-  
+
       const payload = {
         content: content,
         title: title,
@@ -130,39 +130,37 @@ const PostScreen = ({ navigation, route }) => {
         image: downloadURL,
       };
       console.log(payload);
-    //  let Posted;
-    // try{
-    //   Posted = await api.addPost(payload);
-    //   Alert.alert(
-    //     "Notification",
-    //     "Post added successfully",
-    //     [
-    //       {
-    //         text: "OK",
-    //         onPress: () => console.log("Cancel Pressed"),
-    //         style: "cancel",
-    //       },
-    //     ],
-    //     { cancelable: false }
-    //   );
-    //   console.log('Post added successfully:', response.data);
-    // }
-    // catch(error) {
-    //     console.error('Error adding post:', error);
-    //     // Xử lý lỗi
-    //   };
+      let Posted;
+      try {
+        Posted = await api.addPost(payload);
+        Alert.alert(
+          "Notification",
+          "Post added successfully",
+          [
+            {
+              text: "OK",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+          ],
+          { cancelable: false }
+        );
+        console.log("Post added successfully:", response.data);
+      } catch (error) {
+        console.error("Error adding post:", error);
+        // Xử lý lỗi
+      }
     } catch (error) {
-      console.log('Lỗi khi tải lên hình ảnh:', error);
+      console.log("Lỗi khi tải lên hình ảnh:", error);
     }
   };
-  
 
   const renderTextInputs = (viewIndex, inputs) => {
     return inputs.map((input, index) => (
       <View key={input.id} style={{ flexDirection: "row" }}>
         <TextInput
           placeholder="Nhập tên món ăn...."
-          placeholderTextColor={rgba(0, 0, 0, 0.2)} // Màu đen với độ mờ 50%
+          // placeholderTextColor={rgba(0, 0, 0, 0.2)} // Màu đen với độ mờ 50%
           style={{
             flex: 1,
             borderWidth: 2,
@@ -186,7 +184,7 @@ const PostScreen = ({ navigation, route }) => {
             name="delete"
             size={25}
             color="black"
-            marginLeft={10}
+            marginLeft={30}
             marginTop={20}
           />
         </TouchableOpacity>
@@ -222,7 +220,7 @@ const PostScreen = ({ navigation, route }) => {
       aspect: [10, 10],
       quality: 1,
     });
-    
+
     if (!result.canceled) {
       const source = result.uri;
       console.log(source);
@@ -234,14 +232,14 @@ const PostScreen = ({ navigation, route }) => {
     try {
       const response = await fetch(image);
       const blob = await response.blob();
-      const storageRef = ref(storage, 'images/' + Date.now());
+      const storageRef = ref(storage, "images/" + Date.now());
       await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(storageRef);
       URLimage = downloadURL;
-      console.log('Hình ảnh được tải lên thành công. URL:', downloadURL);
+      console.log("Hình ảnh được tải lên thành công. URL:", downloadURL);
       setImageUrl(downloadURL);
     } catch (error) {
-      console.log('Lỗi khi tải lên hình ảnh:', error);
+      console.log("Lỗi khi tải lên hình ảnh:", error);
     }
   };
 
@@ -290,12 +288,22 @@ const PostScreen = ({ navigation, route }) => {
       </View>
       <ScrollView style={{ backgroundColor: "#faeccd" }}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
-        {image &&<Image source={{ uri: image }} style={{ width: "90%", height: 250, marginTop: 20, borderRadius: 20 }} />}
+          {image && (
+            <Image
+              source={{ uri: image }}
+              style={{
+                width: "90%",
+                height: 250,
+                marginTop: 20,
+                borderRadius: 20,
+              }}
+            />
+          )}
           <TouchableOpacity
             style={{
               height: 50,
               width: "30%",
-              backgroundColor:"#F7D600",
+              backgroundColor: "#F7D600",
               alignItems: "center",
               justifyContent: "center",
               marginTop: 20,
@@ -440,9 +448,7 @@ const PostScreen = ({ navigation, route }) => {
             onChangeText={(text) => setDescribe(text)}
           ></TextInput>
         </View>
-        <View style={{ height: 100 }}>
-        </View>
- 
+        <View style={{ height: 100 }}></View>
       </ScrollView>
     </View>
   );

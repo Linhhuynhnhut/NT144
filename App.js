@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Pressable, LogBox } from "react-native";
+import { StyleSheet, View, Pressable, LogBox, AppRegistry } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -16,6 +16,7 @@ import Recipe from "./src/screens/Recipe";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as eva from "@eva-design/eva";
 import { ApplicationProvider, Layout, Text } from "@ui-kitten/components";
+import { PaperProvider } from "react-native-paper";
 //import AsyncStorage from '@react-native-async-storage/async-storage';
 
 LogBox.ignoreLogs([
@@ -45,9 +46,10 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <ApplicationProvider {...eva} theme={eva.light}>
-      <NavigationContainer>
-        {/* <Tab.Navigator
+    <PaperProvider>
+      <ApplicationProvider {...eva} theme={eva.light}>
+        <NavigationContainer>
+          {/* <Tab.Navigator
           initialRouteName={AppStack}
           screenOptions={({ route }) => ({
             headerShown: false,
@@ -82,22 +84,23 @@ export default function App() {
           <Tab.Screen name="searchName" component={SearchScreen} />
           <Tab.Screen name="profileName" component={ProfileScreen} />
         </Tab.Navigator> */}
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="Introduction" component={IntroScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="Recipe" component={Recipe} />
-          <Stack.Screen name="Search" component={SearchScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Post" component={PostScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </ApplicationProvider>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="Introduction" component={IntroScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Recipe" component={Recipe} />
+            <Stack.Screen name="Search" component={SearchScreen} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Post" component={PostScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ApplicationProvider>
+    </PaperProvider>
   );
 }
 

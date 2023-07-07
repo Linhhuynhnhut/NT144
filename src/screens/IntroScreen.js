@@ -73,17 +73,17 @@ const IntroScreen = ({ navigation, route }) => {
     <>
       <View style={styles.introView}>
         <View style={styles.imageView}>
-          {/* <FlatList
+          <FlatList
             onMomentumScrollEnd={(e) => updateCurrentSlideIndex(e)}
             pagingEnabled
             data={slides}
             renderItem={({ item }) => <Item item={item} />}
             //contentContainerStyle={{ height: height * 0.75 }}
             horizontal
-            showsHorizontalScrollIndicator={true}
+            showsHorizontalScrollIndicator={false}
             //style={{ backgroundColor: "#fff" }}
-          /> */}
-          <ViewPager
+          />
+          {/* <ViewPager
             selectedIndex={selectedIndex}
             onSelect={(index) => setSelectedIndex(index)}
           >
@@ -96,7 +96,7 @@ const IntroScreen = ({ navigation, route }) => {
             <Layout style={styles.tab} level="2">
               <Item item={slides[2]} />
             </Layout>
-          </ViewPager>
+          </ViewPager> */}
         </View>
 
         <Text style={styles.title}>Delicious Food!</Text>

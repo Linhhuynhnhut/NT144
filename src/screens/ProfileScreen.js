@@ -34,26 +34,26 @@ const ProfileScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState(null);
   const [postsLiked, setPostsLiked] = useState(null);
   const [user, setUser] = useState(null);
-  const [profileInfo, setprofileInfo] = useState(null);
   const [isPressedAvt, setIsPressedAvt] = useState(0);
   const [avt, setAvt] = useState(0);
 
+  // const [profileInfo, setprofileInfo] = useState(null);
   // const avtStyle = isPressedAvt ? styles.avatarPressed : styles.avatar;
 
   useEffect(() => {
     const getData = async () => {
       const allUsers = await api.getAllUsers();
       const user = await api.getUser(route.params.myUserId);
-      const follow = await api.getAllFollows();
+      // const follow = await api.getAllFollows();
       const allTags = await api.getAllTags();
       const posts = await api.getAllPosts(); // có _id
       const allReactions = await api.getAllReactions(); // có user, post
 
       //loc
-      const followInfo = {
-        follower: follow.filter((item) => item.followee === user?._id) || [],
-        following: follow.filter((item) => item.follower === user?._id) || [],
-      };
+      // const followInfo = {
+      //   follower: follow.filter((item) => item.followee === user?._id) || [],
+      //   following: follow.filter((item) => item.follower === user?._id) || [],
+      // };
       const myPosts = posts.filter((item) => item.user === user?._id) || [];
       const findItem = avts.find((item) => item?.image?.uri === user?.avatar);
       const allPostsWithTagName = myPosts.map((post) => {
@@ -70,10 +70,10 @@ const ProfileScreen = ({ navigation, route }) => {
       const postLikedIds = allReactions
         .filter((item) => item.user === user?._id)
         .map((r) => r?.post);
-
       const postLiked = posts.filter((item) => {
         return postLikedIds.includes(item._id);
       });
+      console.log("postliked>>>>", postLiked);
 
       const allPostsLikedWithTagName = postLiked.map((post) => {
         const thisPostTags = post?.tags;
@@ -98,7 +98,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
       // console.log("myUser>>>", allPostsWithTagName);
 
-      setprofileInfo(followInfo);
+      // setprofileInfo(followInfo);
       setUser(user);
       setAvt(findItem?.id || 0);
       setIsPressedAvt(findItem?.id);
@@ -223,6 +223,7 @@ const ProfileScreen = ({ navigation, route }) => {
               borderRadius: 10,
               alignItems: "center",
               justifyContent: "center",
+              zIndex: 10,
             }}
             onPress={() =>
               navigation.navigate("Post", {
@@ -301,23 +302,23 @@ const ProfileScreen = ({ navigation, route }) => {
             <View
               style={{
                 flexDirection: "row",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 // alignItems: "center",
                 width: "80%",
               }}
             >
               <View style={{ alignItems: "center" }}>
                 <Text
-                  style={{ fontStyle: "normal", fontSize: 18, fontWeight: 900 }}
+                  style={{ fontStyle: "normal", fontSize: 18, fontWeight: 700 }}
                 >
-                  {posts?.length}
+                  You have {posts?.length} Posts
                 </Text>
                 <Text style={{ fontSize: 12, color: "#24221f" }}>
-                  User Posts
+                  Do you want to add more ???????
                 </Text>
               </View>
 
-              <View style={{ alignItems: "center" }}>
+              {/* <View style={{ alignItems: "center" }}>
                 <Text
                   style={{
                     fontStyle: "normal",
@@ -340,7 +341,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 <Text style={{ fontSize: 12, color: "#24221f" }}>
                   Following
                 </Text>
-              </View>
+              </View> */}
             </View>
 
             <View style={{ height: 10 }}></View>
@@ -449,9 +450,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   buttonLeft: {
+    position: "absolute",
+    left: 0,
     alignSelf: "flex-start",
     height: 40,
     backgroundColor: COLORS.mainColorProfile,
@@ -459,11 +462,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonRight: {
-    alignSelf: "flex-end",
+    position: "absolute",
+    top: 5,
+    right: 0,
     height: 40,
     backgroundColor: COLORS.mainColorProfile,
     width: 60,
-    ustifyContent: "center",
+    justifyContent: "center",
   },
   title: {
     textAlign: "center",

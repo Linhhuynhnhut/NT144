@@ -31,12 +31,12 @@ export default TaskBarcomponent = ({
     <Post post={item} user={item.userInfo} host={host} tagsProp={item.tags} />
   );
   const [dataPosts, setDataPosts] = useState(0);
+
   const windowWidth = Dimensions.get("window").width;
   useEffect(() => {
     const getData = async () => {
-      const allComments = await api.getAllComments();
       const allUsers = await api.getAllUsers();
-      const allReactions = await api.getAllReactions();
+      // const allReactions = await api.getAllReactions();
       const allTags = await api.getAllTags();
       const allPosts = await api.getAllPosts();
 
@@ -77,7 +77,7 @@ export default TaskBarcomponent = ({
 
   return (
     <View style={{ width: windowWidth }}>
-      <View style={styles.taskBar}>
+      {/* <View style={styles.taskBar}>
         <TouchableOpacity
           style={[
             styles.button,
@@ -116,27 +116,6 @@ export default TaskBarcomponent = ({
               },
             ]}
           >
-            Post
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.button,
-            selectedButtons[2] ? styles.activeButton : null,
-          ]}
-          onLayout={onButtonLayout}
-          onPress={() => selectButton(2)}
-        >
-          <Text
-            style={[
-              styles.text,
-              {
-                fontWeight: selectedButtons[2] ? "bold" : "normal",
-                fontSize: selectedButtons[2] ? 18 : 16,
-              },
-            ]}
-          >
             User
           </Text>
         </TouchableOpacity>
@@ -153,29 +132,14 @@ export default TaskBarcomponent = ({
             ]}
           />
         </View>
-        <View>
-          {selectButton === 0 && (
-            <View style={{ backgroundColor: "red", width: 100, height: 100 }} />
-          )}
-          {selectButton === 1 && (
-            <View
-              style={{ backgroundColor: "blue", width: 100, height: 100 }}
-            />
-          )}
-          {selectButton === 2 && (
-            <View
-              style={{ backgroundColor: "yellow", width: 100, height: 100 }}
-            />
-          )}
-        </View>
-      </View>
+      </View> */}
       <View
         style={{
           width: windowWidth,
           //backgroundColor: "#000",
           justifyContent: "center",
           alignItems: "center",
-          height: "92%",
+          height: "100%",
         }}
       >
         {data.length === 0 ? (
