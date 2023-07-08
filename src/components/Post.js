@@ -8,12 +8,14 @@ import {
   Modal,
   TextInput,
   Dimensions,
+  Alert,
 } from "react-native";
 import { api } from "../api/api"; // import api
 import React, { useState, useEffect } from "react";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Button } from "@ui-kitten/components";
 
 import avts from "../data/Avatar";
 
@@ -52,8 +54,17 @@ const Cmt = ({ cmt }) => {
   );
 };
 
-const Post = ({ post, user, host, tagsProp }) => {
-  // console.log(post);
+const Post = ({
+  post,
+  user,
+  host,
+  tagsProp,
+  posts,
+  setPosts,
+  canDel,
+  author,
+}) => {
+  console.log("canDel >>>", canDel);
   const [hostApp, setHostApp] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [cmts, setCmts] = useState(null);
@@ -62,6 +73,7 @@ const Post = ({ post, user, host, tagsProp }) => {
   const [reaction, setReaction] = useState(false);
   const [reactionCount, setReactionCount] = useState(0);
   const [height, setHeight] = useState(0);
+  const [visible, setVisible] = React.useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -72,7 +84,7 @@ const Post = ({ post, user, host, tagsProp }) => {
       const allComments = await api.getAllComments();
       const allTags = await api.getAllTags();
       const thisHost = await api.getUser(host?._id);
-      console.log("host>>>>>", host);
+
       //2. Lọc ra các comment của bài Post, có thả tim ko, tag nào được sử dụng
       const comments = allComments.filter((item) => item.post === post?._id);
       const thisReaction =
@@ -107,7 +119,7 @@ const Post = ({ post, user, host, tagsProp }) => {
       // Nếu có reaction thì cho màu đỏ
       if (thisReaction === null) setReaction(false);
       else setReaction(true);
-
+      // console.log("ktra>>>", post?.title, thisReaction);
       // số tim
       setReactionCount(postReaction);
       setTags(tagsInfo);
@@ -120,12 +132,67 @@ const Post = ({ post, user, host, tagsProp }) => {
 
   return (
     <>
+      <Modal visible={visible}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text>Confirm to Delete? </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                // backgroundColor: "#000",
+                width: 200,
+                justifyContent: "space-between",
+              }}
+            >
+              <Button appearance="outline" onPress={() => setVisible(false)}>
+                Cancel
+              </Button>
+              <Button
+                onPress={async () => {
+                  try {
+                    const newAllPosts = posts.filter(
+                      (item) => item._id != post._id
+                    );
+                    setPosts(newAllPosts);
+                    Alert.alert(
+                      "Notification",
+                      "Post added successfully",
+                      [
+                        {
+                          text: "OK",
+                          onPress: () => console.log("Cancel Pressed"),
+                          style: "cancel",
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                    setVisible(false);
+                    await api.deletePost(post?._id);
+                  } catch (error) {}
+                }}
+              >
+                Confirm
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.postComponent}>
+        <Pressable
+          style={{
+            position: "absolute",
+            right: 0,
+            top: 30,
+            zIndex: 10,
+            display: canDel ? "flex" : "none",
+          }}
+          onPress={() => {
+            setVisible(true);
+          }}
+        >
+          <Icon name="close-circle-outline" size={30} marginRight={20} />
+        </Pressable>
         <View style={styles.postView}>
-          {/* <View style={{ position: "absolute", right: 0, top: 10 }}>
-            <Fontisto name="more-v-a" size={30} marginRight={20} />
-          </View> */}
-
           <View style={styles.headerPost}>
             <Image
               style={{
@@ -136,7 +203,7 @@ const Post = ({ post, user, host, tagsProp }) => {
                 borderColor: "black",
               }}
               source={{
-                uri: user.avatar,
+                uri: author?.avatar,
               }}
             />
             <View
@@ -149,7 +216,7 @@ const Post = ({ post, user, host, tagsProp }) => {
                   fontWeight: "900",
                 }}
               >
-                {user?.nameUser}
+                {author?.nameUser}
               </Text>
               <Text
                 style={{

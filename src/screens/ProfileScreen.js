@@ -1,5 +1,4 @@
 import { api } from "../api/api"; // import api
-import avts from "../data/Avatar";
 import Post from "../components/Post";
 import {
   StyleSheet,
@@ -14,6 +13,7 @@ import {
 import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import avts from "../data/Avatar";
 import COLORS from "../consts/colors";
 import { LinearGradient } from "expo-linear-gradient";
 const ProfileScreen = ({ navigation, route }) => {
@@ -47,14 +47,30 @@ const ProfileScreen = ({ navigation, route }) => {
       // const follow = await api.getAllFollows();
       const allTags = await api.getAllTags();
       const posts = await api.getAllPosts(); // có _id
-      const allReactions = await api.getAllReactions(); // có user, post
 
+      const allReactions = await api.getAllReactions(); // có user, post
+      const allPostsWithInfoUser = posts.map((post) => {
+        let postId = post.user;
+        const thisUser = allUsers.find((item) => item?._id === postId);
+        const findItem = avts.find(
+          (item) => item?.image?.uri === thisUser?.avatar
+        );
+        return {
+          ...post,
+          userInfo: {
+            avatarID: findItem?.id || 0,
+            avatar: thisUser?.avatar,
+            nameUser: thisUser?.nameUser,
+          },
+        };
+      });
       //loc
       // const followInfo = {
       //   follower: follow.filter((item) => item.followee === user?._id) || [],
       //   following: follow.filter((item) => item.follower === user?._id) || [],
       // };
-      const myPosts = posts.filter((item) => item.user === user?._id) || [];
+      const myPosts =
+        allPostsWithInfoUser.filter((item) => item.user === user?._id) || [];
       const findItem = avts.find((item) => item?.image?.uri === user?.avatar);
       const allPostsWithTagName = myPosts.map((post) => {
         const thisPostTags = post?.tags;
@@ -70,10 +86,11 @@ const ProfileScreen = ({ navigation, route }) => {
       const postLikedIds = allReactions
         .filter((item) => item.user === user?._id)
         .map((r) => r?.post);
-      const postLiked = posts.filter((item) => {
+      const postLiked = allPostsWithInfoUser.filter((item) => {
         return postLikedIds.includes(item._id);
       });
-      console.log("postliked>>>>", postLiked);
+      console.log("postliked>>>>", postLikedIds);
+      console.log("postliked>>>>", allReactions);
 
       const allPostsLikedWithTagName = postLiked.map((post) => {
         const thisPostTags = post?.tags;
@@ -110,7 +127,15 @@ const ProfileScreen = ({ navigation, route }) => {
   }, []);
 
   const renderItemPost = ({ item }) => (
-    <Post post={item} user={user} host={user} />
+    <Post
+      post={item}
+      user={user}
+      host={user}
+      posts={posts}
+      setPosts={setPosts}
+      author={item.userInfo}
+      canDel={item.user === user._id}
+    />
   );
 
   const Avatar = ({ src, index }) => (

@@ -64,4 +64,9 @@ export const api = {
     const url = "/reaction/" + String(ID);
     return axiosClient.delete(url);
   },
+
+  deletePost: (ID) => {
+    const url = "/post/" + String(ID);
+    return axiosClient.delete(url);
+  },
 };
