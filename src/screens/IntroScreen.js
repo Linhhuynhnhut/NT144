@@ -63,9 +63,15 @@ const IntroScreen = ({ navigation, route }) => {
     setCurrentSlideIndex(currentIndex);
   };
 
-  const pressStart = () => {
+  const pressStart = async () => {
     if (userToken) {
-      navigation.navigate("Login"); //Nếu tồn tại thì chuyển đến Home
+      const users = await api.getAllUsers();
+      const user = users.find(
+        (user) => user.mail === userToken
+      );
+      navigation.navigate("Home", {
+        myUserId: user._id,
+      }); //Nếu tồn tại thì chuyển đến Home
     } else {
       navigation.navigate("Login");
     }
