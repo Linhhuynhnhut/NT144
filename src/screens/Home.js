@@ -10,6 +10,7 @@ import {
   ImageBackground,
   ScrollView,
   FlatList,
+  LogBox,
 } from "react-native";
 
 import { api } from "../api/api";
@@ -31,7 +32,6 @@ import {
 } from "@ui-kitten/components";
 import { Button, Chip } from "react-native-paper";
 import Blog from "../components/Blog";
-
 const Home = ({ navigation, route }) => {
   console.log("routeHome>>>", route.params.myUserId);
   const [host, setHost] = useState({
@@ -56,7 +56,7 @@ const Home = ({ navigation, route }) => {
     setSelectedIndex(index);
     setVisible(false);
   };
-
+  LogBox.ignoreAllLogs(true);
   const ImgPost = ({ src, index }) => (
     <Image style={styles.imgPost} source={{ uri: src }} />
   );

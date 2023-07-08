@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Pressable,
+  LogBox,
 } from "react-native";
 import COLORS from "../consts/colors";
 import avts from "../data/Avatar";
@@ -17,6 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { icons } from "../constants";
 const SearchScreen = ({ navigation, route }) => {
   console.log("routeSearch>>>", route.params.myUserId);
+  LogBox.ignoreAllLogs(true);
 
   // console.log(route.params.myUserId);
   const [text, setText] = useState("");
