@@ -28,6 +28,8 @@ import { api } from "../api/api";
 import COLORS from "../consts/colors";
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { IndexPath, Layout, Select, SelectItem } from "@ui-kitten/components";
+import { Chip } from "react-native-paper";
 
 //cài đặt firebase
 const firebaseConfig = {
@@ -45,16 +47,24 @@ const storage = getStorage();
 
 const PostScreen = ({ navigation, route }) => {
   const host = route.params.myUserId;
+  const [allTags, setAllTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTagsName, setSelectedTagsName] = useState("");
   const [textInputs1, setTextInputs1] = useState([]);
   const [textInputs2, setTextInputs2] = useState([]);
   const [combinedText1, setCombinedText1] = useState("");
   const [combinedText2, setCombinedText2] = useState("");
   const [showCombinedText, setShowCombinedText] = useState(false);
   const [namePost, setNamePost] = useState("");
-  const [CookingTime, setCookingTime] = useState("");
-  const [Ration, setRation] = useState("");
+  const [CookingTime, setCookingTime] = useState("1 tiếng");
+  const [Ration, setRation] = useState("2 người");
   const [Describe, setDescribe] = useState("");
   const [currentTime, setCurrentTime] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState([
+    new IndexPath(0),
+    new IndexPath(1),
+  ]);
+
   const handleAddInput1 = () => {
     setTextInputs1([...textInputs1, { id: textInputs1.length }]);
   };
@@ -88,13 +98,12 @@ const PostScreen = ({ navigation, route }) => {
   };
   const content = `
   Mô tả: ${Describe}
-  Thời gian nấu: ${CookingTime}
-  Khẩu phần ăn: ${Ration}
-  Nguyên Liệu: 
-  ${combinedText1}
   Cách làm:
   ${combinedText2}
+  Khẩu phần: ${Ration}
 `;
+  // Nguyên Liệu:
+  // ${combinedText1}
   const title = `${namePost}`;
   //btn Post
   const handleShowCombinedText = async () => {
@@ -103,13 +112,13 @@ const PostScreen = ({ navigation, route }) => {
     setShowCombinedText(true);
     setNamePost(namePost);
     setCookingTime(CookingTime);
-    setRation(Ration);
+    // setRation(Ration);
     setDescribe(Describe);
     const now = new Date();
     const day = now.getDate();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
-    const date = `${day}:${month}:${year}`;
+    const date = `${day}/${month}/${year}`;
     setCurrentTime(date);
 
     try {
@@ -128,6 +137,9 @@ const PostScreen = ({ navigation, route }) => {
         date: date,
         user: host,
         image: downloadURL,
+        timeToComplete: CookingTime,
+        portion: Ration,
+        tags: selectedTags,
       };
       console.log(payload);
       let Posted;
@@ -154,6 +166,15 @@ const PostScreen = ({ navigation, route }) => {
       console.log("Lỗi khi tải lên hình ảnh:", error);
     }
   };
+
+  useEffect(() => {
+    const getData = async () => {
+      const allTags = await api.getAllTags();
+      setAllTags(allTags);
+    };
+
+    getData();
+  }, []);
 
   const renderTextInputs = (viewIndex, inputs) => {
     return inputs.map((input, index) => (
@@ -347,8 +368,10 @@ const PostScreen = ({ navigation, route }) => {
               placeholder="2 người"
               placeholderTextColor="#464646"
               value={Ration}
-              onChangeText={(text) => setRation(text)}
-            ></TextInput>
+              onChangeText={(text) => {
+                setRation(text);
+              }}
+            />
           </View>
           <View style={{ flexDirection: "row", marginTop: 20 }}>
             <Text style={{ fontSize: 18, fontWeight: "bold" }}>
@@ -369,35 +392,85 @@ const PostScreen = ({ navigation, route }) => {
               placeholderTextColor="#464646"
               value={CookingTime}
               onChangeText={(text) => setCookingTime(text)}
-            ></TextInput>
+            />
           </View>
         </View>
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>
-            Nguyên Liệu
+            Chọn tag
           </Text>
           {renderTextInputs(1, textInputs1)}
         </View>
-        <View>
-          <TouchableOpacity
-            style={{
-              marginLeft: "30%",
-              borderRadius: 10,
-              flexDirection: "row",
-              width: "45%",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: 10,
-              backgroundColor: "#F7D600",
-            }}
-            onPress={handleAddInput1}
-          >
-            <MaterialIcons name="add" size={30} />
-            <Text style={{ fontSize: 18, fontWeight: "bold", padding: 10 }}>
-              Nguyên Liệu
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView
+          horizontal
+          style={{
+            padding: 20,
+          }}
+          showsHorizontalScrollIndicator={false}
+        >
+          {allTags.map((item) => (
+            <Chip
+              style={{
+                marginRight: 8,
+                marginBottom: 4,
+                height: 40,
+                // width: 100,
+                backgroundColor: "#FFD949",
+              }}
+              onPress={() => {
+                let newSelectedTags = selectedTags;
+                if (newSelectedTags.includes(item._id)) {
+                  const new_arr = newSelectedTags.filter(
+                    (tag) => tag !== item._id
+                  );
+                  setSelectedTags(new_arr);
+                  let nameSelectedTags = "";
+                  new_arr.forEach((element) => {
+                    const thisName = allTags.find(
+                      (tag) => tag?._id === element
+                    ).nameTag;
+                    nameSelectedTags += thisName + " ";
+                  });
+                  setSelectedTagsName(nameSelectedTags);
+
+                  console.log("xóa>>>>", new_arr);
+                  console.log("name>>>>", nameSelectedTags);
+                } else {
+                  newSelectedTags.push(item._id);
+                  console.log("new>>>>>>>>>", newSelectedTags);
+
+                  let nameSelectedTags = "";
+                  newSelectedTags.forEach((element) => {
+                    const thisName = allTags.find(
+                      (tag) => tag?._id === element
+                    ).nameTag;
+                    nameSelectedTags += thisName + " ";
+                  });
+                  console.log("name>>>>", nameSelectedTags);
+                  setSelectedTagsName(nameSelectedTags);
+                  setSelectedTags(newSelectedTags);
+                }
+              }}
+            >
+              {item.nameTag}
+            </Chip>
+          ))}
+        </ScrollView>
+        <TextInput
+          style={{
+            height: 40,
+            width: "80%",
+            borderWidth: 2,
+            borderRadius: 10,
+            marginLeft: 20,
+            padding: 10,
+            fontSize: 17,
+            backgroundColor: "#FFFFFF",
+          }}
+          placeholder=""
+          value={selectedTagsName}
+          editable={false}
+        />
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>
             Cách làm
@@ -500,6 +573,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     marginTop: 20,
+  },
+  container: {
+    minHeight: 128,
   },
 });
 export default PostScreen;

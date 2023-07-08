@@ -72,6 +72,7 @@ const Post = ({ post, user, host, tagsProp }) => {
       const allComments = await api.getAllComments();
       const allTags = await api.getAllTags();
       const thisHost = await api.getUser(host?._id);
+      console.log("host>>>>>", host);
       //2. Lọc ra các comment của bài Post, có thả tim ko, tag nào được sử dụng
       const comments = allComments.filter((item) => item.post === post?._id);
       const thisReaction =
@@ -179,7 +180,7 @@ const Post = ({ post, user, host, tagsProp }) => {
                 color: "#F48100",
               }}
             >
-              Khẩu phần: 4 người
+              Khẩu phần: {post?.portion}
             </Text>
             <Text
               style={{
@@ -192,7 +193,7 @@ const Post = ({ post, user, host, tagsProp }) => {
                 color: "#F48100",
               }}
             >
-              Thời gian nấu: 2 tiếng
+              Thời gian nấu: {post?.timeToComplete}
             </Text>
           </View>
 

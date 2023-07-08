@@ -31,7 +31,6 @@ export default TaskBarcomponent = ({
     <Post post={item} user={item.userInfo} host={host} tagsProp={item.tags} />
   );
   const [dataPosts, setDataPosts] = useState(0);
-
   const windowWidth = Dimensions.get("window").width;
   useEffect(() => {
     const getData = async () => {
