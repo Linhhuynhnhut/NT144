@@ -28,7 +28,14 @@ export default TaskBarcomponent = ({
   host,
 }) => {
   const renderItemPost = ({ item }) => (
-    <Post post={item} user={item.userInfo} host={host} tagsProp={item.tags} />
+    <Post
+      post={item}
+      user={item.userInfo}
+      host={host}
+      tagsProp={item.tags}
+      author={item.userInfo}
+      // canDel={item.user === host._id}
+    />
   );
   const [dataPosts, setDataPosts] = useState(0);
   const windowWidth = Dimensions.get("window").width;
