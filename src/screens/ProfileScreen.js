@@ -9,6 +9,7 @@ import {
   FlatList,
   Modal,
   TouchableOpacity,
+  LogBox,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -137,7 +138,7 @@ const ProfileScreen = ({ navigation, route }) => {
       canDel={item.user === user._id}
     />
   );
-
+  LogBox.ignoreAllLogs(true);
   const Avatar = ({ src, index }) => (
     <Pressable
       onPress={() => {
