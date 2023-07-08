@@ -95,6 +95,7 @@ const Post = ({
         (item) => item.post === post?._id
       );
       const postTags = post?.tags;
+      console.log("thisReaction >>>", thisReaction);
 
       //3. Ứng với mỗi comment => lấy ra userId để kết với thông tin user
       const commentsWithInfo = comments.map((cmt) => {

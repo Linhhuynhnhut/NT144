@@ -55,7 +55,22 @@ const SearchScreen = ({ navigation, route }) => {
       const allTags = await api.getAllTags();
       const allPosts = await api.getAllPosts();
 
-      const postWithTagName = allPosts.map((post) => {
+      const allPostsWithInfoUser = allPosts.map((post) => {
+        let postId = post.user;
+        const thisUser = allUsers.find((item) => item?._id === postId);
+        const findItem = avts.find(
+          (item) => item?.image?.uri === thisUser?.avatar
+        );
+        return {
+          ...post,
+          userInfo: {
+            avatarID: findItem?.id || 0,
+            avatar: thisUser?.avatar,
+            nameUser: thisUser?.nameUser,
+          },
+        };
+      });
+      const postWithTagName = allPostsWithInfoUser.map((post) => {
         const thisPostTags = post?.tags;
         const tagsInThisPost = allTags.filter((tag) => {
           return thisPostTags.includes(tag._id);
