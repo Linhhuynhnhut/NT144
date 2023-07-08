@@ -76,62 +76,6 @@ export default TaskBarcomponent = ({
 
   return (
     <View style={{ width: windowWidth }}>
-      {/* <View style={styles.taskBar}>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            selectedButtons[0] ? styles.activeButton : null,
-          ]}
-          onLayout={onButtonLayout}
-          onPress={() => selectButton(0)}
-        >
-          <Text
-            style={[
-              styles.text,
-              {
-                fontWeight: selectedButtons[0] ? "bold" : "normal",
-                fontSize: selectedButtons[0] ? 18 : 16,
-              },
-            ]}
-          >
-            All
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.button,
-            selectedButtons[1] ? styles.activeButton : null,
-          ]}
-          onLayout={onButtonLayout}
-          onPress={() => selectButton(1)}
-        >
-          <Text
-            style={[
-              styles.text,
-              {
-                fontWeight: selectedButtons[1] ? "bold" : "normal",
-                fontSize: selectedButtons[1] ? 18 : 16,
-              },
-            ]}
-          >
-            User
-          </Text>
-        </TouchableOpacity>
-
-        <View style={styles.lineContainer}>
-          <Animated.View
-            ref={translateXRef}
-            style={[
-              styles.line,
-              {
-                width: buttonWidth,
-                transform: [{ translateX: translateValue }],
-              },
-            ]}
-          />
-        </View>
-      </View> */}
       <View
         style={{
           width: windowWidth,
@@ -161,7 +105,7 @@ export default TaskBarcomponent = ({
                   fontSize: 20,
                 }}
               >
-                Đề xuất cho bạn
+                Recommend
               </Text>
             </View>
             <FlatList
@@ -191,7 +135,7 @@ export default TaskBarcomponent = ({
                   fontSize: 20,
                 }}
               >
-                Kết quả tìm kiếm
+                Search Result
               </Text>
             </View>
             <FlatList

@@ -119,7 +119,7 @@ const SearchScreen = ({ navigation, route }) => {
             }}
           >
             <TextInput
-              placeholder="Bạn muốn tìm kiếm gì? "
+              placeholder="What to eat today?..... "
               placeholderTextColor="#FEB624"
               style={{
                 fontWeight: "bold",

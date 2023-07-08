@@ -157,7 +157,7 @@ const Post = ({ post, user, host, tagsProp }) => {
                   fontSize: 12,
                 }}
               >
-                Đã đăng vào ngày {post?.date}
+                Dated {post?.date}
               </Text>
             </View>
           </View>
@@ -180,7 +180,7 @@ const Post = ({ post, user, host, tagsProp }) => {
                 color: "#F48100",
               }}
             >
-              Khẩu phần: {post?.portion}
+              Portion: {post?.portion}
             </Text>
             <Text
               style={{
@@ -193,7 +193,7 @@ const Post = ({ post, user, host, tagsProp }) => {
                 color: "#F48100",
               }}
             >
-              Thời gian nấu: {post?.timeToComplete}
+              Time to cook: {post?.timeToComplete}
             </Text>
           </View>
 
@@ -356,7 +356,7 @@ const Post = ({ post, user, host, tagsProp }) => {
             </View>
             <View style={styles.inputView}>
               <TextInput
-                placeholder="Nhập bình luận..."
+                placeholder="Comment..."
                 multiline={true}
                 onChangeText={(text) => setText(text)}
                 onContentSizeChange={(event) =>
