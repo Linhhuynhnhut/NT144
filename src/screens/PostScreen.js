@@ -95,13 +95,9 @@ const PostScreen = ({ navigation, route }) => {
       .map((input, index) => `Bước ${index + 1}: ${input.text}`)
       .join("\n");
     setCombinedText2(combinedText);
+    console.log("combinedtext2>>>>", combinedText);
   };
-  const content = `
-  Mô tả: ${Describe}
-  Cách làm:
-  ${combinedText2}
-  Khẩu phần: ${Ration}
-`;
+
   // Nguyên Liệu:
   // ${combinedText1}
   const title = `${namePost}`;
@@ -109,6 +105,7 @@ const PostScreen = ({ navigation, route }) => {
   const handleShowCombinedText = async () => {
     await handleCombineText1();
     await handleCombineText2();
+
     setShowCombinedText(true);
     setNamePost(namePost);
     setCookingTime(CookingTime);
@@ -131,6 +128,11 @@ const PostScreen = ({ navigation, route }) => {
       console.log("Hình ảnh được tải lên thành công. URL:", downloadURL);
       setImageUrl(downloadURL);
 
+      const content = `
+      Mô tả: ${Describe}
+      Cách làm:
+    ${combinedText2}
+      `;
       const payload = {
         content: content,
         title: title,
@@ -180,7 +182,7 @@ const PostScreen = ({ navigation, route }) => {
     return inputs.map((input, index) => (
       <View key={input.id} style={{ flexDirection: "row" }}>
         <TextInput
-          placeholder="Nhập tên món ăn...."
+          placeholder="step ...."
           // placeholderTextColor={rgba(0, 0, 0, 0.2)} // Màu đen với độ mờ 50%
           style={{
             flex: 1,
@@ -346,14 +348,14 @@ const PostScreen = ({ navigation, route }) => {
               padding: 20,
               backgroundColor: "#FFFFFF",
             }}
-            placeholder="Nhập tên món ăn...."
+            placeholder="Name Recipe...."
             placeholderTextColor="#464646"
             value={namePost}
             onChangeText={(text) => setNamePost(text)}
           ></TextInput>
 
           <View style={{ flexDirection: "row", marginTop: 20 }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>Khẩu phần</Text>
+            <Text style={{ fontSize: 18, fontWeight: "bold" }}>Portion</Text>
             <TextInput
               style={{
                 height: 40,
@@ -375,7 +377,7 @@ const PostScreen = ({ navigation, route }) => {
           </View>
           <View style={{ flexDirection: "row", marginTop: 20 }}>
             <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-              Thời gian nấu
+              Time to cook
             </Text>
             <TextInput
               style={{
@@ -397,7 +399,7 @@ const PostScreen = ({ navigation, route }) => {
         </View>
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>
-            Chọn tag
+            Select Tag
           </Text>
           {renderTextInputs(1, textInputs1)}
         </View>
@@ -473,7 +475,7 @@ const PostScreen = ({ navigation, route }) => {
         />
         <View style={{ marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 20 }}>
-            Cách làm
+            Step
           </Text>
           {renderTextInputs(2, textInputs2)}
           <TouchableOpacity
@@ -492,7 +494,7 @@ const PostScreen = ({ navigation, route }) => {
           >
             <MaterialIcons name="add" size={30} />
             <Text style={{ fontSize: 18, fontWeight: "bold", padding: 10 }}>
-              Thêm bước
+              Add step
             </Text>
           </TouchableOpacity>
         </View>
@@ -515,7 +517,7 @@ const PostScreen = ({ navigation, route }) => {
               padding: 20,
               backgroundColor: "#FFFFFF",
             }}
-            placeholder="Nhập mô tả, cảm nghĩ ..."
+            placeholder="Decription ..."
             minHeight={120}
             value={Describe}
             onChangeText={(text) => setDescribe(text)}

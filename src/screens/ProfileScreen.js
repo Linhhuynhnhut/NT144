@@ -21,8 +21,8 @@ const ProfileScreen = ({ navigation, route }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const buttonsTaskbar = [
-    { id: 0, title: "Bài viết", color: "white", boderTop: 0 },
-    { id: 1, title: "Đã thích", color: "white", boderTop: 0 },
+    { id: 0, title: "Posts", color: "white", boderTop: 0 },
+    { id: 1, title: "Liked", color: "white", boderTop: 0 },
     // { id: 2, title: "Following", color: "white", boderTop: 0 },
   ];
   // const [selectedButton, setSelectedButton] = useState(buttonsTaskbar[0]);
@@ -317,31 +317,6 @@ const ProfileScreen = ({ navigation, route }) => {
                   Do you want to add more ???????
                 </Text>
               </View>
-
-              {/* <View style={{ alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontStyle: "normal",
-                    fontSize: 18,
-                    fontWeight: 900,
-                  }}
-                >
-                  {profileInfo?.follower.length}
-                </Text>
-                <Text style={{ fontSize: 12, color: "#24221f" }}>
-                  Followers
-                </Text>
-              </View>
-              <View style={{ alignItems: "center" }}>
-                <Text
-                  style={{ fontStyle: "normal", fontSize: 18, fontWeight: 900 }}
-                >
-                  {profileInfo?.following.length}
-                </Text>
-                <Text style={{ fontSize: 12, color: "#24221f" }}>
-                  Following
-                </Text>
-              </View> */}
             </View>
 
             <View style={{ height: 10 }}></View>

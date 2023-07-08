@@ -450,7 +450,7 @@ const Home = ({ navigation, route }) => {
                   ...FONTS.h4,
                 }}
               >
-                Your wall is here!!
+                My profile
               </Text>
             </TouchableOpacity>
           </View>
