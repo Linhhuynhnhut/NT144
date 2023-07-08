@@ -1,18 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   TextInput,
-  Animated,
-  Dimensions,
   View,
   Text,
-  FlatList,
   Image,
-  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
-  Pressable,
   ScrollView,
+  LogBox,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import {
@@ -30,7 +26,7 @@ import { initializeApp } from "firebase/app";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { IndexPath, Layout, Select, SelectItem } from "@ui-kitten/components";
 import { Chip } from "react-native-paper";
-
+LogBox.ignoreAllLogs(true);
 //cài đặt firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD7EvGPugaTj3Unb3B1EBs1KVoYa9863UA",
@@ -103,9 +99,10 @@ const PostScreen = ({ navigation, route }) => {
   const title = `${namePost}`;
   //btn Post
   const handleShowCombinedText = async () => {
-    await handleCombineText1();
-    await handleCombineText2();
-
+    handleCombineText1();
+    const combinedText = textInputs2
+      .map((input, index) => `Bước ${index + 1}: ${input.text}`)
+      .join("\n");
     setShowCombinedText(true);
     setNamePost(namePost);
     setCookingTime(CookingTime);
@@ -127,11 +124,12 @@ const PostScreen = ({ navigation, route }) => {
       URLimage = downloadURL;
       console.log("Hình ảnh được tải lên thành công. URL:", downloadURL);
       setImageUrl(downloadURL);
+      console.log("content>>>", combinedText);
 
       const content = `
       Mô tả: ${Describe}
       Cách làm:
-    ${combinedText2}
+    ${combinedText}
       `;
       const payload = {
         content: content,
@@ -143,7 +141,6 @@ const PostScreen = ({ navigation, route }) => {
         portion: Ration,
         tags: selectedTags,
       };
-      console.log(payload);
       let Posted;
       try {
         Posted = await api.addPost(payload);
@@ -160,6 +157,9 @@ const PostScreen = ({ navigation, route }) => {
           { cancelable: false }
         );
         console.log("Post added successfully:", response.data);
+        navigation.navigate("Profile", {
+          myUserId: host,
+        });
       } catch (error) {
         console.error("Error adding post:", error);
         // Xử lý lỗi

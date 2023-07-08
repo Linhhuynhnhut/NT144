@@ -6,6 +6,7 @@ import {
   Image,
   FlatList,
   Dimensions,
+  LogBox,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Layout, Text, ViewPager } from "@ui-kitten/components";
@@ -16,6 +17,7 @@ import React, { useState, useEffect } from "react";
 // Sử dụng API để thao tác với Database
 // Khi sử dụng database thì phải npm start bên project database
 import { api } from "../api/api"; // import api
+LogBox.ignoreAllLogs(true);
 
 const slides = [
   {
