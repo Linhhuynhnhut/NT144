@@ -1,28 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNbcrypt from 'react-native-bcrypt';
-import Spinner from 'react-native-loading-spinner-overlay';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Image,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import RNbcrypt from "react-native-bcrypt";
+import Spinner from "react-native-loading-spinner-overlay";
 //import { setRandomFallback } from 'react-native-get-random-values';
 
 import { api } from "../api/api";
 
 const RegisterScreen = ({ navigation, route }) => {
-  const [nameUser, setName] = useState('');
-  const [mail, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [nameUser, setName] = useState("");
+  const [mail, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   // setRandomFallback((callback) => {
   //   const randomBytes = require('react-native-get-random-values').getRandomBytes(16);
   //   callback(randomBytes);
   // });
-  
+
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
     // check fields
-    if (nameUser === "" || mail === "" || password === "" || confirmPassword === "" || phoneNumber === "") {
+    if (
+      nameUser === "" ||
+      mail === "" ||
+      password === "" ||
+      confirmPassword === "" ||
+      phoneNumber === ""
+    ) {
       alert("Please fill in all fields");
       return;
     }
@@ -65,7 +78,9 @@ const RegisterScreen = ({ navigation, route }) => {
           }
           console.log({ user });
           setLoading(false);
-          navigation.navigate('Home', { user });
+          navigation.navigate('Home',  {
+            myUserId: user._id,
+          }););
         }
       } catch (error) {
         alert("Email already exists! Please try again.");
@@ -80,20 +95,23 @@ const RegisterScreen = ({ navigation, route }) => {
   };
 
   const handleLogin = () => {
-    navigation.navigate('Login');
+    navigation.navigate("Login");
   };
 
   return (
     <View style={styles.container}>
       <Spinner
-          //visibility of Overlay Loading Spinner
-          visible={loading}
-          //Text with the Spinner
-          textContent={'Please wait...'}
-          //Text style of the Spinner Text
-          textStyle={styles.spinnerTextStyle}
-        />
-      <Image source={require("../../assets/image/food1.png")} style={styles.image} />
+        //visibility of Overlay Loading Spinner
+        visible={loading}
+        //Text with the Spinner
+        textContent={"Please wait..."}
+        //Text style of the Spinner Text
+        textStyle={styles.spinnerTextStyle}
+      />
+      <Image
+        source={require("../../assets/image/food1.png")}
+        style={styles.image}
+      />
       <Text style={styles.title}>Register</Text>
       <TextInput
         style={styles.input}
@@ -147,39 +165,39 @@ const RegisterScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f2ba35',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f2ba35",
   },
   image: {
     width: 150,
     height: 150,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginBottom: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 32,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: '#777',
+    borderColor: "#777",
     borderRadius: 8,
     padding: 8,
     marginVertical: 8,
-    width: '80%',
+    width: "80%",
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#f27e35',
+    backgroundColor: "#f27e35",
     padding: 12,
     borderRadius: 8,
     marginTop: 16,
-    width: '80%',
-    alignItems: 'center',
-    shadowColor: '#000',
+    width: "80%",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 5,
       height: 5,
@@ -189,14 +207,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
   loginContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 16,
   },
   loginText: {
@@ -204,19 +222,19 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   loginButton: {
-    backgroundColor: '#f2ba35',
+    backgroundColor: "#f2ba35",
     padding: 8,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#f27e35',
+    borderColor: "#f27e35",
   },
   loginButtonText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
   },
   spinnerTextStyle: {
-    color: '#FFF',
+    color: "#FFF",
   },
 });
 
