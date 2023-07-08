@@ -116,14 +116,17 @@ const PostScreen = ({ navigation, route }) => {
     setCurrentTime(date);
 
     try {
-      const response = await fetch(image);
-      const blob = await response.blob();
-      const storageRef = ref(storage, "images/" + Date.now());
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
-      URLimage = downloadURL;
-      console.log("Hình ảnh được tải lên thành công. URL:", downloadURL);
-      setImageUrl(downloadURL);
+      const newImageUrls = [];
+      for (let i = 0; i < images.length; i++) {
+        const response = await fetch(images[i]);
+        const blob = await response.blob();
+        const storageRef = ref(storage, "images/" + Date.now() + "-" + i);
+        await uploadBytes(storageRef, blob);
+        const downloadURL = await getDownloadURL(storageRef);
+        console.log("Hình ảnh được tải lên thành công. URL:", downloadURL);
+        newImageUrls.push(downloadURL);
+      }
+      console.log("setImageUrl", newImageUrls);
       console.log("content>>>", combinedText);
 
       const content = `
@@ -136,11 +139,12 @@ const PostScreen = ({ navigation, route }) => {
         title: title,
         date: date,
         user: host,
-        image: downloadURL,
+        image: newImageUrls,
         timeToComplete: CookingTime,
         portion: Ration,
         tags: selectedTags,
       };
+      console.log("content>>>", payload);
       let Posted;
       try {
         Posted = await api.addPost(payload);
@@ -234,9 +238,7 @@ const PostScreen = ({ navigation, route }) => {
       setTextInputs2(updatedInputs);
     }
   };
-  const [image, setImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
-
+  const [images, setImages] = useState([]);
   const pickImageFromLibrary = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -247,22 +249,24 @@ const PostScreen = ({ navigation, route }) => {
     if (!result.canceled) {
       const source = result.uri;
       console.log(source);
-      setImage(source);
+
+      if (images.length < 3) {
+        const newImages = [...images, source];
+        setImages(newImages);
+      } else {
+        alert("Bạn chỉ được phép tải lên tối đa 3 ảnh.");
+      }
     }
   };
 
-  const uploadImageToFirebase = async () => {
-    try {
-      const response = await fetch(image);
+  const uploadImages = async () => {
+    for (let i = 0; i < images.length; i++) {
+      const response = await fetch(images[i]);
       const blob = await response.blob();
-      const storageRef = ref(storage, "images/" + Date.now());
+      const storageRef = ref(storage, "images/" + Date.now() + "-" + i);
       await uploadBytes(storageRef, blob);
       const downloadURL = await getDownloadURL(storageRef);
-      URLimage = downloadURL;
       console.log("Hình ảnh được tải lên thành công. URL:", downloadURL);
-      setImageUrl(downloadURL);
-    } catch (error) {
-      console.log("Lỗi khi tải lên hình ảnh:", error);
     }
   };
 
@@ -311,8 +315,9 @@ const PostScreen = ({ navigation, route }) => {
       </View>
       <ScrollView style={{ backgroundColor: "#faeccd" }}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
-          {image && (
+          {images.map((image, index) => (
             <Image
+              key={index}
               source={{ uri: image }}
               style={{
                 width: "90%",
@@ -321,7 +326,7 @@ const PostScreen = ({ navigation, route }) => {
                 borderRadius: 20,
               }}
             />
-          )}
+          ))}
           <TouchableOpacity
             style={{
               height: 50,
